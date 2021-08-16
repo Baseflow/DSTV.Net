@@ -10,6 +10,11 @@ namespace DSTV.Exceptions
     {
         private readonly ReaderContext? _context;
 
+        /// <summary>
+        ///     Exposes the line number on which the error occured, or null if not present.
+        /// </summary>
+        public int? LineNumber => _context?.LineNumber;
+
         protected ParseException(ReaderContext context)
         {
             _context = context;
