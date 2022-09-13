@@ -27,6 +27,7 @@ namespace DSTVReader.Tests
             var dstv = await dstvReader.ParseAsync(streamReader);
             var elements = dstv.Elements;
             Assert.Equal(3, elements.Count());
+            var svg = dstv.ToSvg();
         }
 
         /// <summary>

@@ -1,5 +1,4 @@
 using System;
-using System.Text.RegularExpressions;
 using DSTV.Contracts;
 
 namespace DSTV.Implementations;
@@ -13,7 +12,6 @@ internal class FineSplitter : ISplitter
     /// </summary>
     public string[] Split(string input)
     {
-        var match = Regex.Match(input, "(?<=\\d)(?=[a-z])|(?<=[a-z])(?=\\d)|(?<=[\\d\\w.]) +");
-        return match.Success ? input.Split(match.Value) : new []{input};
+        return input.Split(" ", StringSplitOptions.RemoveEmptyEntries);
     }
 }

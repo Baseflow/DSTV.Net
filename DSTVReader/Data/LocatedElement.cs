@@ -4,19 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 namespace DSTV.Data;
 
 [SuppressMessage("Designer", "CA1051:Do not declare visible instance fields", Justification = "This is a DTO")]
-public abstract record LocatedElem : DstvElement {
-    public string FlCode { get; set; }
+public abstract record LocatedElem(string FlCode, double XCoord, double YCoord) : DstvElement {
+    public string FlCode { get; set; } = FlCode;
 
-    protected readonly double XCoord;
-
-    protected readonly double YCoord;
-
-    protected LocatedElem(string flCode, double xCoord, double yCoord) {
-        FlCode = flCode;
-        XCoord = xCoord;
-        YCoord = yCoord;
-    }
-    
     public virtual bool Equals(LocatedElem? other) {
         if (other is null) {
             return false;

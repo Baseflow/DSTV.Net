@@ -31,12 +31,17 @@ public record DstvElement
         for (var i = skipFirst ? 1 : 0; i < separated.Length; i++)
         {
             var matches = Regex.Matches(separated[i], "([^.\\d-]+)");
-            foreach (var match in matches)
+            foreach (Match match in matches)
             {
-                separated[i] = separated[i].Replace(match.ToString()!, string.Empty, StringComparison.Ordinal);
+                separated[i] = separated[i].Replace(match.Value, string.Empty, StringComparison.Ordinal);
             }
         }
         
         return BodyReader.RemoveVoids(separated);
+    }
+
+    public virtual string ToSvg()
+    {
+        return string.Empty;
     }
 }
