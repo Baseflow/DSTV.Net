@@ -1,15 +1,20 @@
+using System.Collections.Generic;
 using DSTV.Contracts;
 
-namespace DSTV.Data
+namespace DSTV.Data;
+
+/// <summary>
+///     The DSTV structure contents.
+/// </summary>
+public record DstvRecord : IDstv
 {
     /// <summary>
-    ///     The DSTV structure contents.
+    ///     All the elements in the structure.
     /// </summary>
-    public record DstvRecord : IDstv
-    {
-        /// <summary>
-        ///     All the (basic) header information.
-        /// </summary>
-        public IDstvHeader? Header { get; set; }
-    }
+    public IEnumerable<DstvElement> Elements { get; set; } = new List<DstvElement>();
+
+    /// <summary>
+    ///     All the (basic) header information.
+    /// </summary>
+    public IDstvHeader? Header { get; set; }
 }

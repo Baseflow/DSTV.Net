@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <RootNamespace>DSTV</RootNamespace>
         <Title>A basic Tekla DSTV NC file parser</Title>
         <PackageProjectUrl>https://github.com/Baseflow/DSTVReader</PackageProjectUrl>
@@ -9,6 +9,7 @@
         <RepositoryUrl>https://github.com/Baseflow/DSTVReader</RepositoryUrl>
         <PackageTags>tekla,dstv,nc,c#,file,parsing</PackageTags>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
