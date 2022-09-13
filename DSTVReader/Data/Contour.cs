@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using DSTV.Enums;
 using DSTV.Exceptions;
 
@@ -72,5 +73,11 @@ public record Contour : DstvElement {
         }
 
         return outList;
+    }
+
+    public override string ToSvg()
+    {
+        var points = string.Join(" ", _pointList.Select(d => _pointList.IndexOf(d) == 0 ? "M" : "L").Zip(_pointList, (a, b) => $"{a}{b.XCoord},{b.YCoord}"));
+        return $"<path d=\"{points}\" fill=\"gray\" stroke=\"black\" stroke-width=\"0.5\" />";
     }
 }

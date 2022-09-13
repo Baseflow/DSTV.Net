@@ -18,4 +18,9 @@ public record DstvSlot : DstvHole
     {
         return $"{base.ToString()}, SlotLength : {_slotLen}, SlothWidth : {_slotWidth}, SlotAngle : {_slotAng}";
     }
+    
+    public override string ToSvg()
+    {
+        return $"<circle cx=\"{XCoord}\" cy=\"{YCoord}\" r=\"{Diam / 2}\" fill=\"white\" />";
+    }
 }

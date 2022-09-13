@@ -22,11 +22,13 @@ public record DstvContourPoint : LocatedElem
         separated[0] = separated[0].Trim();
         // ?@>25@O5< GB> ?5@20O ;5:A5<0 - 20;84=K9 :>4 D;0=F0. A;8 =5B, B> 1C45B >AB02;5= 2@5<5==K9 :>4
         if (ValidateFlange(separated[0])) flCode = separated[0];
+        separated = CorrectSplits(separated);
 
-        var xCoord = double.Parse(separated[1], Constants.ParserCultureInfo);
-        var yCoord = double.Parse(separated[2], Constants.ParserCultureInfo);
-        var rad = double.Parse(separated[3], Constants.ParserCultureInfo);
-        if (separated.Length == 4) return new DstvContourPoint(flCode, xCoord, yCoord, rad);
+        var startIndex = separated.Length > 3 ? 1 : 0;
+        var xCoord = double.Parse(separated[startIndex], Constants.ParserCultureInfo);
+        var yCoord = double.Parse(separated[startIndex + 1], Constants.ParserCultureInfo);
+        var rad = double.Parse(separated[startIndex + 2], Constants.ParserCultureInfo);
+        if (separated.Length <= 4) return new DstvContourPoint(flCode, xCoord, yCoord, rad);
 
         double ang1;
         double blunting1;

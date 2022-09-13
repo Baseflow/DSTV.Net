@@ -191,10 +191,10 @@ internal static class BodyReader
     }
 
 
-    public static string[] RemoveVoids(string[] toBeRefined)
+    public static string[] RemoveVoids(IEnumerable<string> toBeRefined)
     {
         var tempList = new List<string>(toBeRefined);
         tempList.RemoveAll(string.IsNullOrEmpty);
-        return toBeRefined;
+        return tempList.ToArray();
     }
 }
