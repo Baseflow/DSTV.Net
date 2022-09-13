@@ -1,13 +1,20 @@
-namespace DSTV.Contracts
+using System.Collections.Generic;
+using DSTV.Data;
+
+namespace DSTV.Contracts;
+
+/// <summary>
+///     Interface describing the model of the parsed DSTV structure
+/// </summary>
+public interface IDstv
 {
     /// <summary>
-    ///     Interface describing the model of the parsed DSTV structure
+    ///     The header of the DSTV structure
     /// </summary>
-    public interface IDstv
-    {
-        /// <summary>
-        ///     The header of the DSTV structure
-        /// </summary>
-        IDstvHeader? Header { get; }
-    }
+    IDstvHeader? Header { get; }
+
+    /// <summary>
+    ///     The list of all the DSTV entries
+    /// </summary>
+    IEnumerable<DstvElement> Elements { get; }
 }

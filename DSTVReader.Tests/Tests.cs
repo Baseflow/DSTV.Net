@@ -1,9 +1,11 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using DSTV;
 using DSTV.Enums;
 using DSTV.Exceptions;
+using DSTV.Implementations;
 using Xunit;
 
 namespace DSTVReader.Tests
@@ -17,10 +19,25 @@ namespace DSTVReader.Tests
         ///     Expect a valid parse result
         /// </summary>
         [Fact]
+        public async Task Test_Body_NC4()
+        {
+            using var streamReader = new StreamReader($"{DataPath}/Data/RealWorld/4.NC");
+            var dstvReader = new DstvReader();
+
+            var dstv = await dstvReader.ParseAsync(streamReader);
+            var elements = dstv.Elements;
+            Assert.Equal(3, elements.Count());
+        }
+
+        /// <summary>
+        ///     Example of a valid DSTV file header.
+        ///     Expect a valid parse result
+        /// </summary>
+        [Fact]
         public async Task Test_P1()
         {
             using var streamReader = new StreamReader($"{DataPath}/Data/P1.nc");
-            var dstvReader = new DSTV.Implementations.DstvReader();
+            var dstvReader = new DstvReader();
 
             var header = (await dstvReader.ParseAsync(streamReader)).Header;
 
@@ -87,7 +104,7 @@ namespace DSTVReader.Tests
         public async Task Test_PRST37_2()
         {
             using var streamReader = new StreamReader($"{DataPath}/Data/RST37-2.nc");
-            var dstvReader = new DSTV.Implementations.DstvReader();
+            var dstvReader = new DstvReader();
 
             var header = (await dstvReader.ParseAsync(streamReader)).Header;
 
@@ -154,9 +171,10 @@ namespace DSTVReader.Tests
         public async Task Test_FreeTextTooLargeException()
         {
             using var streamReader = new StreamReader($"{DataPath}/Data/E1.nc");
-            var dstvReader = new DSTV.Implementations.DstvReader();
+            var dstvReader = new DstvReader();
 
-            var exception = await Assert.ThrowsAsync<FreeTextTooLargeException>(() => dstvReader.ParseAsync(streamReader));
+            var exception =
+                await Assert.ThrowsAsync<FreeTextTooLargeException>(() => dstvReader.ParseAsync(streamReader));
             Assert.Equal(string.Format(Constants.FreeTextTooLargeExceptionMessage, 3), exception.Message);
         }
 
@@ -169,7 +187,7 @@ namespace DSTVReader.Tests
         public async Task Test_EnumParseException()
         {
             using var streamReader = new StreamReader($"{DataPath}/Data/E2.nc");
-            var dstvReader = new DSTV.Implementations.DstvReader();
+            var dstvReader = new DstvReader();
 
             await Assert.ThrowsAsync<EnumParseException<CodeProfile>>(() => dstvReader.ParseAsync(streamReader));
         }
@@ -182,7 +200,7 @@ namespace DSTVReader.Tests
         public async Task Test_MissingStartOfFileException()
         {
             using var streamReader = new StreamReader($"{DataPath}/Data/E3.nc");
-            var dstvReader = new DSTV.Implementations.DstvReader();
+            var dstvReader = new DstvReader();
 
             await Assert.ThrowsAsync<MissingStartOfFileException>(() => dstvReader.ParseAsync(streamReader));
         }
@@ -195,7 +213,7 @@ namespace DSTVReader.Tests
         public async Task Test_DoubleParseException()
         {
             using var streamReader = new StreamReader($"{DataPath}/Data/E4.nc");
-            var dstvReader = new DSTV.Implementations.DstvReader();
+            var dstvReader = new DstvReader();
 
             var exception = await Assert.ThrowsAsync<DoubleParseException>(() => dstvReader.ParseAsync(streamReader));
             Assert.Equal(string.Format(Constants.DoubleParseExceptionMessage, 11), exception.Message);
@@ -209,7 +227,7 @@ namespace DSTVReader.Tests
         public async Task Test_UnexpectedCharacterException()
         {
             using var streamReader = new StreamReader($"{DataPath}/Data/E5.nc");
-            var dstvReader = new DSTV.Implementations.DstvReader();
+            var dstvReader = new DstvReader();
 
             var exception =
                 await Assert.ThrowsAsync<UnexpectedCharacterException>(() => dstvReader.ParseAsync(streamReader));
@@ -224,7 +242,7 @@ namespace DSTVReader.Tests
         public async Task Test_IntegerParseException()
         {
             using var streamReader = new StreamReader($"{DataPath}/Data/E6.nc");
-            var dstvReader = new DSTV.Implementations.DstvReader();
+            var dstvReader = new DstvReader();
 
             var exception = await Assert.ThrowsAsync<IntegerParseException>(() => dstvReader.ParseAsync(streamReader));
             Assert.Equal(string.Format(Constants.IntegerParseExceptionMessage, 8), exception.Message);
@@ -238,7 +256,7 @@ namespace DSTVReader.Tests
         public async Task Test_TupleParseException()
         {
             using var streamReader = new StreamReader($"{DataPath}/Data/E7.nc");
-            var dstvReader = new DSTV.Implementations.DstvReader();
+            var dstvReader = new DstvReader();
 
             var exception =
                 await Assert.ThrowsAsync<TupleParseException<double>>(() => dstvReader.ParseAsync(streamReader));
@@ -254,7 +272,7 @@ namespace DSTVReader.Tests
         public async Task Test_UnexpectedEndException()
         {
             using var streamReader = new StreamReader($"{DataPath}/Data/E8.nc");
-            var dstvReader = new DSTV.Implementations.DstvReader();
+            var dstvReader = new DstvReader();
 
             var exception = await Assert.ThrowsAsync<UnexpectedEndException>(() => dstvReader.ParseAsync(streamReader));
             Assert.Equal(string.Format(Constants.UnexpectedEndExceptionMessage), exception.Message);

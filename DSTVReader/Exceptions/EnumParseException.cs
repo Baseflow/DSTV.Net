@@ -1,29 +1,28 @@
 using System;
 using DSTV.Implementations;
 
-namespace DSTV.Exceptions
+namespace DSTV.Exceptions;
+
+public class EnumParseException<TEnum> : ParseException
+    where TEnum : struct, Enum
 {
-    public class EnumParseException<TEnum> : ParseException
-        where TEnum : struct, Enum
+    public EnumParseException(ReaderContext context) : base(context)
     {
-        public EnumParseException(ReaderContext context) : base(context)
-        {
-        }
+    }
 
-        protected EnumParseException(ReaderContext context, string message) : base(context, message)
-        {
-        }
+    protected EnumParseException(ReaderContext context, string message) : base(context, message)
+    {
+    }
 
-        protected EnumParseException()
-        {
-        }
+    protected EnumParseException()
+    {
+    }
 
-        protected EnumParseException(string? message) : base(message)
-        {
-        }
+    protected EnumParseException(string? message) : base(message)
+    {
+    }
 
-        protected EnumParseException(string? message, Exception? innerException) : base(message, innerException)
-        {
-        }
+    protected EnumParseException(string? message, Exception? innerException) : base(message, innerException)
+    {
     }
 }
