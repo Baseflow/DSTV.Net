@@ -56,10 +56,8 @@ internal static class TextReaderExtensions
     /// <param name="reader">An instance of a <see cref="TextReader" /> containing the DSTV source data</param>
     /// <param name="context">The active reader context</param>
     /// <returns></returns>
-    /// <exception cref="TupleParseException
-    /// <double>
-    ///     "></exception>
-    ///     <exception cref="DoubleParseException"></exception>
+    /// <exception cref="TupleParseException{TDouble}"></exception>
+    /// <exception cref="DoubleParseException"></exception>
     internal static async Task<Tuple<double, double?>> ParseTupleDouble(this TextReader reader,
         ReaderContext context)
     {
@@ -104,8 +102,7 @@ internal static class TextReaderExtensions
     /// <param name="reader">An instance of a <see cref="TextReader" /> containing the DSTV source data</param>
     /// <param name="context">The active reader context</param>
     /// <returns>The integer read or an exception</returns>
-    /// <exception cref="EnumParseException
-    /// <TEnum>"></exception>
+    /// <exception cref="EnumParseException{TEnum}"></exception>
     internal static async Task<TEnum> ParseEnum<TEnum>(this TextReader reader, ReaderContext context)
         where TEnum : struct, Enum
     {

@@ -11,7 +11,7 @@ namespace DSTV.Implementations;
 
 internal static class BodyReader
 {
-    public static async Task<IEnumerable<DstvElement>> GetElements(ReaderContext readerContext)
+    public static async Task<IEnumerable<DstvElement>> GetElementsAsync(ReaderContext readerContext)
     {
         var outputList = new List<DstvElement>();
         var elemMap = await GetElementMapAsync(readerContext).ConfigureAwait(false);
@@ -131,16 +131,18 @@ internal static class BodyReader
         }
     }
 
-    private static async Task<Dictionary<ContourType, List<List<string>>?>> GetElementMapAsync(ReaderContext readerContext)
+    private static async Task<Dictionary<ContourType, List<List<string>>?>> GetElementMapAsync(ReaderContext context)
     {
+        var reader = context.Source;
+
         Dictionary<ContourType, List<List<string>>?> elemMap = new();
-        var lines = (await readerContext.Source.ReadToEndAsync().ConfigureAwait(false)).Split("\n");
         var curKey = ContourType.None;
-        foreach (var line in lines)
+        while (true)
         {
+            var line = await reader.ReadLineAsync().ConfigureAwait(false);
             // if has END-mark.
             //  Maybe to be refactored for multi-peace file processing
-            if (line.Equals(Constants.EndOfFile, StringComparison.Ordinal) || line.Equals(Constants.Indicator, StringComparison.Ordinal))
+            if (line is null || line.Equals(Constants.EndOfFile, StringComparison.Ordinal) || line.Equals(Constants.Indicator, StringComparison.Ordinal))
             {
                 break;
             }

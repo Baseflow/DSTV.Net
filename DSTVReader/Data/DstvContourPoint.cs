@@ -20,11 +20,13 @@ public record DstvContourPoint : LocatedElem
         // temporary flange-code in case of missing a signature in line
         var flCode = "x";
         separated[0] = separated[0].Trim();
-        // ?@>25@O5< GB> ?5@20O ;5:A5<0 - 20;84=K9 :>4 D;0=F0. A;8 =5B, B> 1C45B >AB02;5= 2@5<5==K9 :>4
         if (ValidateFlange(separated[0])) flCode = separated[0];
         separated = CorrectSplits(separated);
 
-        var startIndex = separated.Length > 3 ? 1 : 0;
+        //var startIndex = separated.Length > 3 ? 1 : 0;
+        // TODO : ej this check is not correct yet... assume always 0 for now. Investigate further... 
+        var startIndex = 0;
+        
         var xCoord = double.Parse(separated[startIndex], Constants.ParserCultureInfo);
         var yCoord = double.Parse(separated[startIndex + 1], Constants.ParserCultureInfo);
         var rad = double.Parse(separated[startIndex + 2], Constants.ParserCultureInfo);
@@ -39,6 +41,16 @@ public record DstvContourPoint : LocatedElem
             if (ang1 == 0 && blunting1 == 0) return new DstvContourPoint(flCode, xCoord, yCoord, rad);
 
             return new DstvSkewedPoint(flCode, xCoord, yCoord, rad, ang1, blunting1, 0, 0);
+        }
+        
+        if (separated.Length == 7)
+        {
+            ang1 = double.Parse(separated[4], Constants.ParserCultureInfo);
+            var ang2 = double.Parse(separated[6], Constants.ParserCultureInfo);
+            blunting1 = double.Parse(separated[5], Constants.ParserCultureInfo);
+            if (ang1 == 0 && blunting1 == 0) return new DstvContourPoint(flCode, xCoord, yCoord, rad);
+
+            return new DstvSkewedPoint(flCode, xCoord, yCoord, rad, ang1, blunting1, ang2, 0);
         }
 
         if (separated.Length == 8)
