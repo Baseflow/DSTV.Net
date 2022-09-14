@@ -9,7 +9,7 @@ public record DstvNumeration : LocatedElem
     private readonly double _letterHeight;
     private readonly string _text;
 
-    public DstvNumeration(string flCode, double xCoord, double yCoord, double angle, double letterHeight, string text) :
+    private DstvNumeration(string flCode, double xCoord, double yCoord, double angle, double letterHeight, string text) :
         base(flCode, xCoord, yCoord)
     {
         _angle = angle;
@@ -20,7 +20,7 @@ public record DstvNumeration : LocatedElem
 
     public static DstvNumeration CreateNumeration(string dstvLine)
     {
-        var separated = GetDataVector(dstvLine, PositionNumericSplitter.Instance);
+        var separated = GetDataVector(dstvLine, FineSplitter.Instance);
         // temporary flange-code in case of missing a signature in line
         var flCode = "x";
         if (ValidateFlange(separated[1]))
@@ -28,7 +28,7 @@ public record DstvNumeration : LocatedElem
             flCode = separated[1];
         }
 
-        separated = CorrectSplits(separated);
+        separated = CorrectSplits(separated, skipLast:true);
 
         if (separated.Length < 5)
         {

@@ -11,7 +11,7 @@ public record DstvHole : LocatedElem
     private readonly double _depth;
     protected readonly double Diam;
 
-    public DstvHole(string flCode, double xCoord, double yCoord, double diam, double depth) : base(flCode, xCoord, yCoord)
+    protected DstvHole(string flCode, double xCoord, double yCoord, double diam, double depth) : base(flCode, xCoord, yCoord)
     {
         Diam = diam;
         _depth = depth;
@@ -26,13 +26,19 @@ public record DstvHole : LocatedElem
         if (!ValidateFlange(separated[0]))
             throw new DstvParseException("Illegal flange code signature in BO data line");
 
-        if (separated.Length < 5) throw new DstvParseException("Illegal data vector format (BO): too short");
+        if (separated.Length < 4) throw new DstvParseException("Illegal data vector format (BO): too short");
 
         var xCoord = double.Parse(separated[1], Constants.ParserCultureInfo);
         var yCoord = double.Parse(separated[2], Constants.ParserCultureInfo);
         var diam = double.Parse(separated[3], Constants.ParserCultureInfo);
-        var depth = double.Parse(separated[4], Constants.ParserCultureInfo);
-        if (separated.Length == 5) return new DstvHole(separated[0], xCoord, yCoord, diam, depth);
+        var depth = 0d;
+        if (separated.Length > 4)
+        {
+            // the depth can be optional
+            depth = double.Parse(separated[4], Constants.ParserCultureInfo);
+        }
+
+        if (separated.Length is 4 or 5) return new DstvHole(separated[0], xCoord, yCoord, diam, depth);
 
         if (separated.Length == 8)
         {

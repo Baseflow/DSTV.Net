@@ -31,7 +31,7 @@ public sealed class DstvReader : IDstvReader
         var result = new DstvRecord
         {
             Header = await HeaderReader.ParseAsync(context).ConfigureAwait(false),
-            Elements = await BodyReader.GetElements(context).ConfigureAwait(false)
+            Elements = await BodyReader.GetElementsAsync(context).ConfigureAwait(false)
         };
 
         return result;
