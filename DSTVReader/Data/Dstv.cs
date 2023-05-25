@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Threading;
 using DSTV.Contracts;
 
 namespace DSTV.Data;
@@ -16,7 +18,16 @@ public record DstvRecord : IDstv
 
     public string ToSvg()
     {
-        return $"<svg width={Header?.Length} height={Header?.ProfileHeight}>{string.Concat(Elements.OrderByDescending(d => d is Contour).Select(d => d.ToSvg()))}</svg>";
+        var tmpCulture = Thread.CurrentThread.CurrentCulture;
+        try
+        {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-GB");
+            return @$"<svg width=""{Header?.Length}"" height=""{Header?.ProfileHeight}"" xmlns=""http://www.w3.org/2000/svg"">{string.Concat(Elements.OrderByDescending(d => d is Contour).Select(d => d.ToSvg()))}</svg>";
+        }
+        finally
+        {
+            Thread.CurrentThread.CurrentCulture = tmpCulture;
+        }
     }
 
     /// <summary>
