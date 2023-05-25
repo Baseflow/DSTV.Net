@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+using System.Text;
 using DSTV.Enums;
 using DSTV.Exceptions;
 
@@ -10,6 +10,7 @@ namespace DSTV.Data;
 [SuppressMessage("Design", "CA1303:Do not pass literals as localized parameters", Justification = "Will fix later")]
 public record Contour : DstvElement {
     private readonly List<DstvContourPoint> _pointList;
+    // ReSharper disable once NotAccessedField.Local
     private readonly ContourType _type;
     
     private Contour(List<DstvContourPoint> pointList, ContourType type)
@@ -77,7 +78,54 @@ public record Contour : DstvElement {
 
     public override string ToSvg()
     {
-        var points = string.Join(" ", _pointList.Select(d => _pointList.IndexOf(d) == 0 ? "M" : "L").Zip(_pointList, (a, b) => $"{a}{b.XCoord},{b.YCoord}"));
+        StringBuilder sb = new StringBuilder();
+        bool isFirst = true;
+        DstvContourPoint previous = new DstvContourPoint("x", 0, 0, 0);
+        foreach (var point in _pointList)
+        {
+            if (isFirst)
+            {
+                sb.Append('M').Append(point.XCoord).Append(',').Append(point.YCoord);
+            }
+            else
+            {
+                sb.Append(' ');
+                var radius = previous.Radius;
+                if (radius > 0)
+                {
+
+                    if (previous.YCoord > point.YCoord && point.XCoord > previous.XCoord) // left-top corner
+                    {
+                        sb.Append('Q').Append(previous.XCoord).Append(',').Append(point.YCoord)
+                            .Append(',').Append(point.XCoord).Append(',').Append(point.YCoord);
+                    }
+                    else if (previous.YCoord < point.YCoord && point.XCoord > previous.XCoord ) // top-right corner
+                    {
+                        sb.Append('Q').Append(point.XCoord).Append(',').Append(previous.YCoord)
+                            .Append(',').Append(point.XCoord).Append(',').Append(point.YCoord);
+                    }
+                    else if (previous.YCoord < point.YCoord && point.XCoord < previous.XCoord) // right-bottom corner
+                    {
+                        sb.Append('Q').Append(previous.XCoord).Append(',').Append(point.YCoord)
+                            .Append(',').Append(point.XCoord).Append(',').Append(point.YCoord);
+                    }
+                    else if (previous.YCoord > point.YCoord && point.XCoord < previous.XCoord) // bottom-left corner
+                    {
+                        sb.Append('Q').Append(point.XCoord).Append(',').Append(previous.YCoord)
+                            .Append(',').Append(point.XCoord).Append(',').Append(point.YCoord);
+                    }
+                }
+                else
+                {
+                    sb.Append('L').Append(point.XCoord).Append(',').Append(point.YCoord);
+                }
+            }
+            isFirst = false;
+            previous = point;
+        }
+
+        var points = sb.ToString();
+        //var points = string.Join(" ", _pointList.Select(d => _pointList.IndexOf(d) == 0 ? "M" : d is DstvContourPoint cp && cp.Radius >0 ? "Q" : "L").Zip(_pointList, (a, b) => $"{a}{b.XCoord},{b.YCoord}"));
         return $"<path d=\"{points}\" fill=\"gray\" stroke=\"black\" stroke-width=\"0.5\" />";
     }
 }

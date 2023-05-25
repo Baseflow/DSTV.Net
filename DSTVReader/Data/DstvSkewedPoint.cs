@@ -23,6 +23,6 @@ public record DstvSkewedPoint : DstvContourPoint
     public override string ToString()
     {
         return
-            $"DStVSkewedPoint{{ang1={_ang1}, blunting1={_blunting1}, ang2={_ang2}, blunting2={_blunting2}, radius={Radius}, flCode='{FlCode}', xCoord={XCoord}, yCoord={YCoord}}}";
+            $"DStVSkewedPoint{{ang1={_ang1}, blunting1={_blunting1}, ang2={_ang2}, blunting2={_blunting2}, radius={_radius}, flCode='{FlCode}', xCoord={XCoord}, yCoord={YCoord}}}";
     }
 }

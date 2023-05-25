@@ -7,11 +7,12 @@ namespace DSTV.Data;
 [SuppressMessage("Designer", "CA1051:Do not declare visible instance fields", Justification = "This is a DTO")]
 public record DstvContourPoint : LocatedElem
 {
-    protected readonly double Radius;
+    protected readonly double _radius;
+    public double Radius => _radius;
 
     public DstvContourPoint(string flCode, double xCoord, double yCoord, double radius) : base(flCode, xCoord, yCoord)
     {
-        Radius = radius;
+        _radius = radius;
     }
 
     public static DstvContourPoint CreatePoint(string dstvElement)
@@ -75,6 +76,6 @@ public record DstvContourPoint : LocatedElem
 
     public override string ToString()
     {
-        return $"DStVContourPoint : radius={Radius}, flCode=\'{FlCode}\', xCoord={XCoord}, yCoord={YCoord}";
+        return $"DStVContourPoint : radius={_radius}, flCode=\'{FlCode}\', xCoord={XCoord}, yCoord={YCoord}";
     }
 }
