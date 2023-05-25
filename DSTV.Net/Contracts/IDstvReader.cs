@@ -1,7 +1,4 @@
-using System.IO;
-using System.Threading.Tasks;
-
-namespace DSTV.Contracts;
+namespace DSTV.Net.Contracts;
 
 /// <summary>
 ///     Interface for reading DSTV (.nc) files

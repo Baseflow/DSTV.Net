@@ -1,4 +1,4 @@
-using DSTV.Contracts;
+using DSTV.Net.Contracts;
 using DSTV.Net.Enums;
 
 namespace DSTV.Net.Data;

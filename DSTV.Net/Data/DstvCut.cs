@@ -12,7 +12,7 @@ public record DstvCut : DstvElement
     private readonly double _spPointY;
     private readonly double _spPointZ;
 
-    public DstvCut(double spPointX, double spPointY, double spPointZ, double normVecX, double normVecY, double normVecZ)
+    private DstvCut(double spPointX, double spPointY, double spPointZ, double normVecX, double normVecY, double normVecZ)
     {
         _spPointX = spPointX;
         _spPointY = spPointY;

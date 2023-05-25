@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using DSTV.Contracts;
+﻿using DSTV.Net.Contracts;
 using DSTV.Net.Data;
 using DSTV.Net.Exceptions;
 

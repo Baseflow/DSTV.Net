@@ -22,14 +22,10 @@ public record DstvContourPoint : LocatedElem
         separated[0] = separated[0].Trim();
         if (ValidateFlange(separated[0])) flCode = separated[0];
         separated = CorrectSplits(separated);
-
-        //var startIndex = separated.Length > 3 ? 1 : 0;
-        // TODO : ej this check is not correct yet... assume always 0 for now. Investigate further... 
-        var startIndex = 0;
-
-        var xCoord = double.Parse(separated[startIndex], Constants.ParserCultureInfo);
-        var yCoord = double.Parse(separated[startIndex + 1], Constants.ParserCultureInfo);
-        var rad = double.Parse(separated[startIndex + 2], Constants.ParserCultureInfo);
+        
+        var xCoord = double.Parse(separated[0], Constants.ParserCultureInfo);
+        var yCoord = double.Parse(separated[1], Constants.ParserCultureInfo);
+        var rad = double.Parse(separated[2], Constants.ParserCultureInfo);
         if (separated.Length <= 4) return new DstvContourPoint(flCode, xCoord, yCoord, rad);
 
         double ang1;
@@ -63,7 +59,9 @@ public record DstvContourPoint : LocatedElem
                 && blunting1 == 0
                 && ang2 == 0
                 && blunting2 == 0)
+            {
                 return new DstvContourPoint(flCode, xCoord, yCoord, rad);
+            }
 
             return new DstvSkewedPoint(flCode, xCoord, yCoord, rad, ang1, blunting1, ang2, blunting2);
         }

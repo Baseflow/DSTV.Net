@@ -30,5 +30,5 @@ internal static class Constants
     internal const string FreeTextTooLargeExceptionMessage =
         "The parsed FreeText is too large, only a maximum of 80 characters is allowed on lineNumber {0}";
 
-    internal static CultureInfo ParserCultureInfo = CultureInfo.InvariantCulture;
+    internal static readonly CultureInfo ParserCultureInfo = CultureInfo.InvariantCulture;
 }

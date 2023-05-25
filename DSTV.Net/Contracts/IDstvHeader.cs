@@ -1,6 +1,6 @@
 using DSTV.Net.Enums;
 
-namespace DSTV.Contracts;
+namespace DSTV.Net.Contracts;
 
 public interface IDstvHeader
 {

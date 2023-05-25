@@ -1,6 +1,5 @@
-using System;
 using System.Text.RegularExpressions;
-using DSTV.Contracts;
+using DSTV.Net.Contracts;
 using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
 

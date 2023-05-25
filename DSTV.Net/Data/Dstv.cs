@@ -1,8 +1,5 @@
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Threading;
-using DSTV.Contracts;
+using DSTV.Net.Contracts;
 
 namespace DSTV.Net.Data;
 
@@ -14,7 +11,7 @@ public record DstvRecord : IDstv
     /// <summary>
     ///     All the elements in the structure.
     /// </summary>
-    public IEnumerable<DstvElement> Elements { get; set; } = new List<DstvElement>();
+    public IEnumerable<DstvElement> Elements { get; init; } = new List<DstvElement>();
 
     public string ToSvg()
     {
@@ -23,7 +20,7 @@ public record DstvRecord : IDstv
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-GB");
             return
-                @$"<svg width=""{Header?.Length}"" height=""{Header?.ProfileHeight}"" xmlns=""http://www.w3.org/2000/svg"">{string.Concat(Elements.OrderByDescending(d => d is Contour).Select(d => d.ToSvg()))}</svg>";
+                @$"<svg viewbox=""0 0 {Header?.Length} {Header?.ProfileHeight}"" width=""{Header?.Length}"" height=""{Header?.ProfileHeight}"" xmlns=""http://www.w3.org/2000/svg"">{string.Concat(Elements.OrderByDescending(d => d is Contour).Select(d => d.ToSvg()))}</svg>";
         }
         finally
         {
@@ -34,5 +31,5 @@ public record DstvRecord : IDstv
     /// <summary>
     ///     All the (basic) header information.
     /// </summary>
-    public IDstvHeader? Header { get; set; }
+    public IDstvHeader? Header { get; init; }
 }

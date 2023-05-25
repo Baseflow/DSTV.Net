@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using DSTV.Net.Data;
 
-namespace DSTV.Contracts;
+namespace DSTV.Net.Contracts;
 
 /// <summary>
 ///     Interface describing the model of the parsed DSTV structure

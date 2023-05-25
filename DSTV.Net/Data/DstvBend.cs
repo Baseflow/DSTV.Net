@@ -16,7 +16,7 @@ public record DstvBend : DstvElement
 
     private readonly double _originY;
 
-    public DstvBend(double originX, double originY, double finishX, double finishY, double bendingAngle,
+    private DstvBend(double originX, double originY, double finishX, double finishY, double bendingAngle,
         double bendingRadius)
     {
         _originX = originX;

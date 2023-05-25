@@ -1,4 +1,4 @@
-namespace DSTV.Contracts;
+namespace DSTV.Net.Contracts;
 
 public interface ISplitter
 {

@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using DSTV.Net.Data;
 using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
