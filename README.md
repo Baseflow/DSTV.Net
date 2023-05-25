@@ -1,5 +1,6 @@
 # DSTV.Net
-[![Build and Publish](https://github.com/Baseflow/DSTV.Net/actions/workflows/BUILD_TEST_DSTV_NET.yml/badge.svg)](https://github.com/tluijken/task-endurer/actions/workflows/PUBLISH_PACKAGES.yml)
+[![Build and Test](https://github.com/Baseflow/DSTV.Net/actions/workflows/BUILD_TEST_DSTV_NET.yml/badge.svg)](https://github.com/Baseflow/DSTV.Net/actions/workflows/BUILD_TEST_DSTV_NET.yml)
+[![Publish](https://github.com/Baseflow/DSTV.Net/actions/workflows/PUBLISH_PACKAGES.yml/badge.svg)](https://github.com/Baseflow/DSTV.Net/actions/workflows/PUBLISH_PACKAGES.yml)
 [![NuGet version (DSTV.Net)](https://img.shields.io/nuget/v/DSTV.Net.svg?style=flat-square)](https://www.nuget.org/packages/DSTV.Net/)
 
 DSTV.Net is an open-source library tailored for .NET platforms, providing a powerful utility for interacting with DSTV (also known as NC1 or Tekla) files. These files serve as a key industry standard in the steel industry, defining geometry and project information for steel plates.
