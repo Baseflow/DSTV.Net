@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
