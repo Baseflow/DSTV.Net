@@ -89,7 +89,7 @@ The CodeProfile contains the following values:
 
 In addition to parsing, DSTV.Net also facilitates the visualization of the geometry of steel plates as defined in DSTV files. It achieves this by converting the geometric data into an SVG (Scalable Vector Graphics) format. This immediate visual representation aids better understanding and verification of the data extracted.
 
-<svg viewBox="0 0 490 372" width="490" height="372" xmlns="http://www.w3.org/2000/svg"><path d="M0,229.72 L6,229.19 L16,219.19 L16,0 L174,0 L174,219.19 L184,229.19 L490,229.19 L490,345.59 Q490,372.59,463,372.59 L27,372.59 Q0,372.59,0,345.59 L0,229.72" fill="gray" stroke="black" stroke-width="0.5"></path><circle cx="22.000" cy="349.000" r="11.000" fill="white"></circle><circle cx="49" cy="50" r="11" fill="white"></circle><circle cx="139" cy="50" r="11" fill="white"></circle><circle cx="467.000" cy="349.000" r="11.000" fill="white"></circle></svg>
+![image](./.img/dstv.svg)
 
 We support this by providing a SVG generator that can be used to generate SVG files from the parsed DSTV data.
 
