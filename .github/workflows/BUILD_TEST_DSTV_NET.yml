@@ -1,0 +1,39 @@
+name: Build and Unit Test Dstv reader
+
+on:
+  push:
+    paths:
+      - 'DSTV.Net/**'
+      - 'DSTV.Net.Tests/**'
+      - '.github/workflows/BUILD_TEST_DSTV_NET.yml'
+    branches: [ develop, master ]
+  pull_request:
+    paths:
+      - 'DSTV.Net/**'
+      - 'DSTV.Net.Tests/**'
+      - '.github/workflows/BUILD_TEST_DSTV_NET.yml'
+    branches: [ develop, master ]
+
+jobs:
+  build_test_dstv_net:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+      - name: Restore dependencies
+        run: dotnet restore DSTV.Net.sln
+      - name: Build
+        run: dotnet build DSTV.Net.sln --no-restore
+      - name: Test
+        run: dotnet test DSTV.Net.sln --no-build --verbosity normal
+
+  publish_dstv_net_to_nuget:
+    needs: build_test_dstv_net
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' # Only deploy for main branch and push event, as we release from main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test
+        run: echo "todo"

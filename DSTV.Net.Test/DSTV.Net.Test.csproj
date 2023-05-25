@@ -3,10 +3,10 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <IsPackable>false</IsPackable>
-        <Title>Testclass for DSTVReader</Title>
-        <PackageProjectUrl>https://github.com/Baseflow/DSTVReader</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/Baseflow/DSTVReader/blob/main/LICENSE</PackageLicenseUrl>
-        <RepositoryUrl>https://github.com/Baseflow/DSTVReader</RepositoryUrl>
+        <Title>Testclass for DSTV.Net</Title>
+        <PackageProjectUrl>https://github.com/Baseflow/DSTV.Net</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/Baseflow/DSTV.Net/blob/main/LICENSE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/Baseflow/DSTV.Net</RepositoryUrl>
         <PackageTags>tekla,dstv,nc,c#,file,parsing</PackageTags>
     </PropertyGroup>
 
