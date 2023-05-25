@@ -58,6 +58,6 @@ public record DstvHole : LocatedElem
 
     public override string ToSvg()
     {
-        return $"<circle cx=\"{XCoord}\" cy=\"{YCoord}\" r=\"{Diam / 2}\" fill=\"white\" />";
+        return $"<circle cx=\"{XCoord:F}\" cy=\"{YCoord:F}\" r=\"{(Diam / 2):F}\" fill=\"white\" />";
     }
 }
