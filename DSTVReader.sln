@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSTVReader.Tests", "DSTVReader.Tests\DSTVReader.Tests.csproj", "{96AAA004-121E-483B-8B76-7038189BE74F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSTV.Net.Test", "DSTV.Net.Test\DSTV.Net.Test.csproj", "{96AAA004-121E-483B-8B76-7038189BE74F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSTVReader", "DSTVReader\DSTVReader.csproj", "{C079A279-10A1-44E5-BE63-43B4773BF18B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSTV.Net", "DSTV.Net\DSTV.Net.csproj", "{C079A279-10A1-44E5-BE63-43B4773BF18B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
