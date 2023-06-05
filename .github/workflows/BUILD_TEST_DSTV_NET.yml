@@ -6,23 +6,23 @@ on:
       - 'DSTV.Net/**'
       - 'DSTV.Net.Tests/**'
       - '.github/workflows/BUILD_TEST_DSTV_NET.yml'
-    branches: [ develop, master ]
+    branches: [ develop, main ]
   pull_request:
     paths:
       - 'DSTV.Net/**'
       - 'DSTV.Net.Tests/**'
       - '.github/workflows/BUILD_TEST_DSTV_NET.yml'
-    branches: [ develop, master ]
+    branches: [ develop, main ]
 
 jobs:
   build_test_dstv_net:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 7.0.x
       - name: Restore dependencies
         run: dotnet restore DSTV.Net.sln
       - name: Build
