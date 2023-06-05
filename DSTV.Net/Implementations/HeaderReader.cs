@@ -113,7 +113,6 @@ internal sealed class HeaderReader
             return;
         }
 
-
         if (buffer[0] != Space) throw new UnexpectedCharacterException(context, Space, buffer[0]);
 
         if (buffer[1] != Space) throw new UnexpectedCharacterException(context, Space, buffer[1]);

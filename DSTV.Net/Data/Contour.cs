@@ -41,8 +41,10 @@ public record Contour : DstvElement
                     throw new DstvParseException("First point of AK/IK block haven\'t flange mark, processing aborted");
 
                 if (i == firstIndex)
+                {
                     Console.WriteLine(
                         "Warning: first point of contour haven\'t flange mark, mark will be taken from previous contour in section");
+                }
 
                 pointList[i].FlCode = pointList[i - 1].FlCode;
             }

@@ -96,6 +96,7 @@ internal static class TextReaderExtensions
     /// <summary>
     ///     Parses an enum of type <see cref="TEnum" />
     /// </summary>
+    /// <typeparam name="TEnum"></typeparam>
     /// <param name="reader">An instance of a <see cref="TextReader" /> containing the DSTV source data</param>
     /// <param name="context">The active reader context</param>
     /// <returns>The integer read or an exception</returns>

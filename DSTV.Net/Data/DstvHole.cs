@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace DSTV.Net.Data;
 
 [SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "This is a DTO")]
-public record DstvHole : LocatedElem
+public record DstvHole : LocatedElement
 {
     //0 if through
     private readonly double _depth;
