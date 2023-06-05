@@ -1,7 +1,7 @@
-using System.Text.RegularExpressions;
 using DSTV.Net.Data;
 using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
+using System.Text.RegularExpressions;
 
 namespace DSTV.Net.Implementations;
 

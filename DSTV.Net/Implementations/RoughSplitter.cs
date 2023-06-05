@@ -1,5 +1,5 @@
-using System.Text.RegularExpressions;
 using DSTV.Net.Contracts;
+using System.Text.RegularExpressions;
 
 namespace DSTV.Net.Implementations;
 
