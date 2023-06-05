@@ -76,7 +76,6 @@ internal static class BodyReader
                 Console.WriteLine(dStVParseException);
             }
 
-
         return outputList;
     }
 
@@ -120,7 +119,7 @@ internal static class BodyReader
             var line = await reader.ReadLineAsync().ConfigureAwait(false);
             // if has END-mark.
             //  Maybe to be refactored for multi-peace file processing
-            if (line is null || line.Equals(Constants.EndOfFile, StringComparison.Ordinal) ||
+            if (line?.Equals(Constants.EndOfFile, StringComparison.Ordinal) != false ||
                 line.Equals(Constants.Indicator, StringComparison.Ordinal)) break;
 
             // if has quote-mark
@@ -151,7 +150,6 @@ internal static class BodyReader
             "^BO$|^SI$|^AK$|^IK$|^PU$|^KO$|^SC$|^UE$|^KA$|^EN$|^ST$|^E[0-9]$|^B[0-9]$|^S[0-9]$|^A[0-9]$|^I[0-9]$|^P[0-9]$|^K[0-9]$");
 
     private static bool CheckCodeLine(string str) => Regex.IsMatch(str, "^[A-Z0-9]{2}$");
-
 
     public static string[] RemoveVoids(IEnumerable<string> toBeRefined)
     {
