@@ -86,7 +86,7 @@ internal static class TextReaderExtensions
     internal static async Task<int> ParseInteger(this TextReader reader, ReaderContext context)
     {
         var text = await reader.ReadLineAsync().ConfigureAwait(false);
-        if (!int.TryParse(text, out var value)) throw new IntegerParseException(context);
+        if (!int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var value)) throw new IntegerParseException(context);
 
         context.IncrementLineNumber();
 
