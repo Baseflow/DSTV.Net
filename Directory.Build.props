@@ -27,7 +27,7 @@
 
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<AnalysisLevel>latest</AnalysisLevel>
-		<AnalysisMode>Recommended</AnalysisMode>
+		<AnalysisMode>All</AnalysisMode>
 
 		<IsTestProject>$(MSBuildProjectName.Contains('Test'))</IsTestProject>
     </PropertyGroup>

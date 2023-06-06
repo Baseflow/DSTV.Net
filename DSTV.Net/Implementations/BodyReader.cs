@@ -7,6 +7,7 @@ namespace DSTV.Net.Implementations;
 
 internal static class BodyReader
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "<Pending>")]
     public static async Task<IEnumerable<DstvElement>> GetElementsAsync(ReaderContext readerContext)
     {
         var outputList = new List<DstvElement>();
@@ -123,7 +124,7 @@ internal static class BodyReader
                 line.Equals(Constants.Indicator, StringComparison.Ordinal)) break;
 
             // if has quote-mark
-            if (Regex.IsMatch(line, "^\\*\\*.*")) continue;
+            if (Regex.IsMatch(line, "^\\*\\*.*", RegexOptions.None, TimeSpan.FromSeconds(1))) continue;
 
             if (CheckCodeLine(line))
             {
@@ -147,9 +148,9 @@ internal static class BodyReader
     private static bool CheckIfMark(string str) =>
         // there are some more patterns in DStV, but they are too seldom and/or is not necessary yet
         Regex.IsMatch(str,
-            "^BO$|^SI$|^AK$|^IK$|^PU$|^KO$|^SC$|^UE$|^KA$|^EN$|^ST$|^E[0-9]$|^B[0-9]$|^S[0-9]$|^A[0-9]$|^I[0-9]$|^P[0-9]$|^K[0-9]$");
+            "^BO$|^SI$|^AK$|^IK$|^PU$|^KO$|^SC$|^UE$|^KA$|^EN$|^ST$|^E[0-9]$|^B[0-9]$|^S[0-9]$|^A[0-9]$|^I[0-9]$|^P[0-9]$|^K[0-9]$", RegexOptions.None, TimeSpan.FromSeconds(1));
 
-    private static bool CheckCodeLine(string str) => Regex.IsMatch(str, "^[A-Z0-9]{2}$");
+    private static bool CheckCodeLine(string str) => Regex.IsMatch(str, "^[A-Z0-9]{2}$", RegexOptions.None, TimeSpan.FromSeconds(1));
 
     public static string[] RemoveVoids(IEnumerable<string> toBeRefined)
     {
