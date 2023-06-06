@@ -20,6 +20,7 @@ public record Contour : DstvElement
     }
 
     [SuppressMessage("Design", "CA1002:Do not expose generic lists", Justification = "This is a record")]
+    [SuppressMessage("Design", "MA0016:Prefer returning collection abstraction instead of implementation", Justification = "This is a record")]
     public static IEnumerable<Contour> CreateSeveralContours(List<DstvContourPoint> pointList, ContourType type)
     {
         if (pointList is null) throw new ArgumentNullException(nameof(pointList));
