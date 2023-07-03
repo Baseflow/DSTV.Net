@@ -7,7 +7,7 @@ namespace DSTV.Net.Implementations;
 
 internal static class BodyReader
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "<Pending>")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "Should be cleaned up later")]
     public static async Task<IEnumerable<DstvElement>> GetElementsAsync(ReaderContext readerContext)
     {
         var outputList = new List<DstvElement>();
@@ -15,7 +15,9 @@ internal static class BodyReader
         // holes & slots
         var holeBlocks = elemMap.GetValueOrDefault(ContourType.BO);
         if (holeBlocks != null)
+        {
             foreach (var holeNote in holeBlocks.SelectMany(holeList => holeList))
+            {
                 try
                 {
                     outputList.Add(DstvHole.CreateHole(holeNote));
@@ -24,6 +26,8 @@ internal static class BodyReader
                 {
                     Console.WriteLine(dStVParseException);
                 }
+            }
+        }
 
         // outer contours
         var outerBorders = elemMap.GetValueOrDefault(ContourType.AK);

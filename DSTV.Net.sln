@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DSTV.Net", "DSTV.Net\DSTV.N
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{EAC305B1-31C8-491E-ADF2-246DA316EB5A}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
 		.github\workflows\BUILD_TEST_DSTV_NET.yml = .github\workflows\BUILD_TEST_DSTV_NET.yml
 		Directory.Build.props = Directory.Build.props
 		.github\workflows\PUBLISH_PACKAGES.yml = .github\workflows\PUBLISH_PACKAGES.yml
