@@ -30,10 +30,10 @@ public record DstvContourPoint : LocatedElem
 
         double ang1;
         double blunting1;
-        if (separated.Length == 6)
+        if (separated.Length == 5)
         {
-            ang1 = double.Parse(separated[4], Constants.ParserCultureInfo);
-            blunting1 = double.Parse(separated[5], Constants.ParserCultureInfo);
+            ang1 = double.Parse(separated[3], Constants.ParserCultureInfo);
+            blunting1 = double.Parse(separated[4], Constants.ParserCultureInfo);
             if (ang1 == 0 && blunting1 == 0) return new DstvContourPoint(flCode, xCoord, yCoord, rad);
 
             return new DstvSkewedPoint(flCode, xCoord, yCoord, rad, ang1, blunting1, 0, 0);
