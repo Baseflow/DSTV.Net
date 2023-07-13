@@ -17,6 +17,7 @@ internal static class BodyReader
             foreach (var holeNote in holeBlocks.SelectMany(holeList => holeList))
                 try
                 {
+                    if (holeNote.Equals(ContourType.BO.ToString(), StringComparison.Ordinal)) continue;
                     outputList.Add(DstvHole.CreateHole(holeNote));
                 }
                 catch (DstvParseException dStVParseException)
@@ -42,6 +43,7 @@ internal static class BodyReader
             foreach (var numNote in numerationBlocks.SelectMany(numList => numList))
                 try
                 {
+                    if (numNote.Equals(ContourType.SI.ToString(), StringComparison.Ordinal)) continue;
                     outputList.Add(DstvNumeration.CreateNumeration(numNote));
                 }
                 catch (DstvParseException dStVParseException)
@@ -55,6 +57,7 @@ internal static class BodyReader
             foreach (var bendNote in bendBlocks.SelectMany(bendList => bendList))
                 try
                 {
+                    if (bendNote.Equals(ContourType.KA.ToString(), StringComparison.Ordinal)) continue;
                     outputList.Add(DstvBend.CreateBend(bendNote));
                 }
                 catch (DstvParseException dStVParseException)
@@ -69,6 +72,7 @@ internal static class BodyReader
         foreach (var cutNote in cutBlocks.SelectMany(cutList => cutList))
             try
             {
+                if (cutNote.Equals(ContourType.SC.ToString(), StringComparison.Ordinal)) continue;
                 outputList.Add(DstvCut.CreateCut(cutNote));
             }
             catch (DstvParseException dStVParseException)
@@ -91,6 +95,7 @@ internal static class BodyReader
             foreach (var pointNote in noteList)
                 try
                 {
+                    if (pointNote.Equals(type.ToString(), StringComparison.Ordinal)) continue;
                     localList.Add(DstvContourPoint.CreatePoint(pointNote));
                 }
                 catch (DstvParseException dStVParseException)
