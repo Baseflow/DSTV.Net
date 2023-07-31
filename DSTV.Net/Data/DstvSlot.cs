@@ -16,8 +16,7 @@ public record DstvSlot : DstvHole
         _slotAng = slotAng;
     }
 
-    public override string ToString() =>
-        $"{base.ToString()}, SlotLength : {_slotLen}, SlothWidth : {_slotWidth}, SlotAngle : {_slotAng}";
+    public override string ToString() => $"{base.ToString()}, SlotLength : {_slotLen}, SlothWidth : {_slotWidth}, SlotAngle : {_slotAng}";
 
-    public override string ToSvg() => $"<circle cx=\"{XCoord}\" cy=\"{YCoord}\" r=\"{Diam / 2}\" fill=\"white\" />";
+    public override string ToSvg() => $"<rect x=\"{XCoord}\" y=\"{YCoord}\" width=\"{_slotLen + Diam}\" height=\"{Diam}\" fill=\"white\" rx=\"{Diam / 2}\" />";
 }

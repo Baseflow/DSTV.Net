@@ -13,8 +13,8 @@
         <LangVersion>latest</LangVersion>
         <NoWarn>$(NoWarn);1591;1701;1702;1705;VSX1000;NU1603;CA1014;NU5125</NoWarn>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <Version>1.1.0</Version>
-        <AssemblyVersion>1.1.0</AssemblyVersion>
+        <Version>1.1.1</Version>
+        <AssemblyVersion>1.1.1</AssemblyVersion>
         <IsTestProject>$(MSBuildProjectName.Contains('Test'))</IsTestProject>
     </PropertyGroup>
 

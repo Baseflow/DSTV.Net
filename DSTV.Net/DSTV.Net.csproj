@@ -4,13 +4,13 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Version>1.0.1</Version>
-        <PackageVersion>1.1.0</PackageVersion>
+        <Version>1.1.1</Version>
+        <PackageVersion>1.1.1</PackageVersion>
         <Description>DSTV.Net is an open-source library tailored for .NET platforms, providing a powerful utility for interacting with DSTV (also known as NC1 or Tekla) files. These files serve as a key industry standard in the steel industry, defining geometry and project information for steel plates.</Description>
         <PackageProjectUrl>https://github.com/Baseflow/DSTV.Net</PackageProjectUrl>
         <PackageIcon>icon.png</PackageIcon>
         <PackageTags>DSTV, Tekla, NC, NC1, SVG, Steel, Plates</PackageTags>
-        <PackageReleaseNotes>Added indicator for bezels on contours, countour layout for bezeled rows.</PackageReleaseNotes>
+        <PackageReleaseNotes>Corrected visualization for slots.</PackageReleaseNotes>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
     <ItemGroup>
