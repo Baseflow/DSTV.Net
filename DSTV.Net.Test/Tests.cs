@@ -2,6 +2,7 @@ using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
 using System.Globalization;
+using DSTV.Net.Data;
 using Xunit;
 
 namespace DSTV.Net.Test;
@@ -15,12 +16,13 @@ public class Tests
     ///     Expect a valid parse result
     /// </summary>
     [Fact]
-    public async Task TestP1()
+    public async Task TestP1Header()
     {
         using var streamReader = new StreamReader($"{DataPath}/Data/P1.nc");
         var dstvReader = new DstvReader();
 
-        var header = (await dstvReader.ParseAsync(streamReader).ConfigureAwait(false)).Header;
+        var parsed = await dstvReader.ParseAsync(streamReader).ConfigureAwait(false);
+        var header = parsed.Header;
 
         Assert.NotNull(header);
 
@@ -75,6 +77,34 @@ public class Tests
         Assert.Equal(string.Empty, result.Text3InfoOnPiece);
         //2x, a Text info on piece
         Assert.Equal(string.Empty, result.Text4InfoOnPiece);
+    }
+
+	/// <summary>
+    ///     Example of a valid DSTV file body.
+    ///     Expect a valid parse result
+    /// </summary>
+    [Fact]
+    public async Task TestP1Body()
+    {
+        using var streamReader = new StreamReader($"{DataPath}/Data/P1.nc");
+        var dstvReader = new DstvReader();
+
+        var parsed = await dstvReader.ParseAsync(streamReader).ConfigureAwait(false);
+        var header = parsed.Header;
+
+        Assert.NotNull(parsed.Elements);
+        Assert.Equal(9, parsed.Elements.Count());
+
+        var elements = parsed.Elements.ToArray();
+        Assert.True(elements[0] is DstvHole);
+        Assert.True(elements[1] is DstvHole);
+        Assert.True(elements[2] is DstvHole);
+        Assert.True(elements[3] is Contour);
+        Assert.True(elements[4] is Contour);
+        Assert.True(elements[5] is Contour);
+        Assert.True(elements[6] is Contour);
+        Assert.True(elements[7] is DstvNumeration);
+        Assert.True(elements[8] is DstvNumeration);
     }
 
     /// <summary>

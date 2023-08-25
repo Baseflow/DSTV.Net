@@ -7,28 +7,37 @@ namespace DSTV.Net.Implementations;
 
 internal static class BodyReader
 {
+    /// <summary>
+    ///     Skips the item in <param name="items"></param> where the item is equal to <param name="contourType"></param> and executes the <param name="action"></param> on the remaining items.
+    /// </summary>
+    /// <param name="items">An enumerable of strings that will be iterated.</param>
+    /// <param name="contourType">The type of contour to handle with.</param>
+    /// <param name="action">The action to call for each non-skipped item.</param>
+    private static void SkipSelfAndExecute(this IEnumerable<string> items, ContourType contourType, Action<string> action)
+    {
+        foreach (var item in items)
+        {
+            try
+            {
+                if (item.Equals(contourType.ToString(), StringComparison.Ordinal)) continue;
+                action(item);
+            }
+            catch (DstvParseException dStVParseException)
+            {
+                Console.WriteLine(dStVParseException);
+            }
+        }
+    }
+
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "Should be cleaned up later")]
     public static async Task<IEnumerable<DstvElement>> GetElementsAsync(ReaderContext readerContext)
     {
         var outputList = new List<DstvElement>();
         var elemMap = await GetElementMapAsync(readerContext).ConfigureAwait(false);
         // holes & slots
-        var holeBlocks = elemMap.GetValueOrDefault(ContourType.BO);
-        if (holeBlocks != null)
-        {
-            foreach (var holeNote in holeBlocks.SelectMany(holeList => holeList))
-            {
-                try
-                {
-                    if (holeNote.Equals(ContourType.BO.ToString(), StringComparison.Ordinal)) continue;
-                    outputList.Add(DstvHole.CreateHole(holeNote));
-                }
-                catch (DstvParseException dStVParseException)
-                {
-                    Console.WriteLine(dStVParseException);
-                }
-            }
-        }
+        (elemMap.GetValueOrDefault(ContourType.BO) ?? new List<List<string>>())
+            .SelectMany(holeList => holeList)
+            .SkipSelfAndExecute(ContourType.BO, (holeNote) => outputList.Add(DstvHole.CreateHole(holeNote)));
 
         // outer contours
         var outerBorders = elemMap.GetValueOrDefault(ContourType.AK);
@@ -43,48 +52,18 @@ internal static class BodyReader
         var punchPointNotes = elemMap.GetValueOrDefault(ContourType.KO);
         AddContoursByType(outputList, punchPointNotes, ContourType.KO);
         // numeration
-        var numerationBlocks = elemMap.GetValueOrDefault(ContourType.SI);
-        if (numerationBlocks is not null)
-            foreach (var numNote in numerationBlocks.SelectMany(numList => numList))
-                try
-                {
-                    if (numNote.Equals(ContourType.SI.ToString(), StringComparison.Ordinal)) continue;
-                    outputList.Add(DstvNumeration.CreateNumeration(numNote));
-                }
-                catch (DstvParseException dStVParseException)
-                {
-                    Console.WriteLine(dStVParseException);
-                }
-
+        (elemMap.GetValueOrDefault(ContourType.SI)?? new List<List<string>>())
+            .SelectMany(numNote => numNote)
+            .SkipSelfAndExecute(ContourType.SI, (numNote) => outputList.Add(DstvNumeration.CreateNumeration(numNote)));
         // bends
-        var bendBlocks = elemMap.GetValueOrDefault(ContourType.KA);
-        if (bendBlocks is not null)
-            foreach (var bendNote in bendBlocks.SelectMany(bendList => bendList))
-                try
-                {
-                    if (bendNote.Equals(ContourType.KA.ToString(), StringComparison.Ordinal)) continue;
-                    outputList.Add(DstvBend.CreateBend(bendNote));
-                }
-                catch (DstvParseException dStVParseException)
-                {
-                    Console.WriteLine(dStVParseException);
-                }
-
+        (elemMap.GetValueOrDefault(ContourType.KA) ?? new List<List<string>>())
+            .SelectMany(bendNote => bendNote)
+            .SkipSelfAndExecute(ContourType.KA, (bendNote) => outputList.Add(DstvBend.CreateBend(bendNote)));
         // cuts
-        var cutBlocks = elemMap.GetValueOrDefault(ContourType.SC);
-        if (cutBlocks is null) return outputList;
-
-        foreach (var cutNote in cutBlocks.SelectMany(cutList => cutList))
-            try
-            {
-                if (cutNote.Equals(ContourType.SC.ToString(), StringComparison.Ordinal)) continue;
-                outputList.Add(DstvCut.CreateCut(cutNote));
-            }
-            catch (DstvParseException dStVParseException)
-            {
-                Console.WriteLine(dStVParseException);
-            }
-
+        (elemMap.GetValueOrDefault(ContourType.SC) ?? new List<List<string>>())
+            .SelectMany(cutNote => cutNote)
+            .SkipSelfAndExecute(ContourType.SC, (cutNote) => outputList.Add(DstvCut.CreateCut(cutNote)));
+       
         return outputList;
     }
 
@@ -97,6 +76,7 @@ internal static class BodyReader
         {
             List<DstvContourPoint> localList = new();
             foreach (var pointNote in noteList)
+            {
                 try
                 {
                     if (pointNote.Equals(type.ToString(), StringComparison.Ordinal)) continue;
@@ -106,6 +86,7 @@ internal static class BodyReader
                 {
                     Console.WriteLine(dStVParseException);
                 }
+            }
 
             try
             {
