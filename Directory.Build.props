@@ -1,4 +1,4 @@
-﻿<Project>
+<Project>
     <PropertyGroup>
 		<Copyright>Copyright (c) Baseflow. All rights reserved</Copyright>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -91,7 +91,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-        <PackageReference Include="IDisposableAnalyzers" Version="4.0.4">
+        <PackageReference Include="IDisposableAnalyzers" Version="4.0.6">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
