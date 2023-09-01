@@ -1,7 +1,7 @@
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
+using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
 namespace DSTV.Net.Data;
 
@@ -20,6 +20,7 @@ public record Contour : DstvElement
     }
 
     [SuppressMessage("Design", "CA1002:Do not expose generic lists", Justification = "This is a record")]
+    [SuppressMessage("Design", "MA0016:Prefer returning collection abstraction instead of implementation", Justification = "This is a record")]
     public static IEnumerable<Contour> CreateSeveralContours(List<DstvContourPoint> pointList, ContourType type)
     {
         if (pointList is null) throw new ArgumentNullException(nameof(pointList));
@@ -41,8 +42,10 @@ public record Contour : DstvElement
                     throw new DstvParseException("First point of AK/IK block haven\'t flange mark, processing aborted");
 
                 if (i == firstIndex)
+                {
                     Console.WriteLine(
                         "Warning: first point of contour haven\'t flange mark, mark will be taken from previous contour in section");
+                }
 
                 pointList[i].FlCode = pointList[i - 1].FlCode;
             }

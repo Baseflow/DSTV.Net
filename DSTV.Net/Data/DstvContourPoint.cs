@@ -1,11 +1,11 @@
-using System.Diagnostics.CodeAnalysis;
 using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DSTV.Net.Data;
 
 [SuppressMessage("Designer", "CA1051:Do not declare visible instance fields", Justification = "This is a DTO")]
-public record DstvContourPoint : LocatedElem
+public record DstvContourPoint : LocatedElement
 {
     protected readonly double _radius;
 

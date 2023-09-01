@@ -1,9 +1,8 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
 using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
+using System.Globalization;
+using DSTV.Net.Data;
 using Xunit;
 
 namespace DSTV.Net.Test;
@@ -17,12 +16,13 @@ public class Tests
     ///     Expect a valid parse result
     /// </summary>
     [Fact]
-    public async Task Test_P1()
+    public async Task TestP1Header()
     {
         using var streamReader = new StreamReader($"{DataPath}/Data/P1.nc");
         var dstvReader = new DstvReader();
 
-        var header = (await dstvReader.ParseAsync(streamReader)).Header;
+        var parsed = await dstvReader.ParseAsync(streamReader).ConfigureAwait(false);
+        var header = parsed.Header;
 
         Assert.NotNull(header);
 
@@ -79,17 +79,45 @@ public class Tests
         Assert.Equal(string.Empty, result.Text4InfoOnPiece);
     }
 
+	/// <summary>
+    ///     Example of a valid DSTV file body.
+    ///     Expect a valid parse result
+    /// </summary>
+    [Fact]
+    public async Task TestP1Body()
+    {
+        using var streamReader = new StreamReader($"{DataPath}/Data/P1.nc");
+        var dstvReader = new DstvReader();
+
+        var parsed = await dstvReader.ParseAsync(streamReader).ConfigureAwait(false);
+        var header = parsed.Header;
+
+        Assert.NotNull(parsed.Elements);
+        Assert.Equal(9, parsed.Elements.Count());
+
+        var elements = parsed.Elements.ToArray();
+        Assert.True(elements[0] is DstvHole);
+        Assert.True(elements[1] is DstvHole);
+        Assert.True(elements[2] is DstvHole);
+        Assert.True(elements[3] is Contour);
+        Assert.True(elements[4] is Contour);
+        Assert.True(elements[5] is Contour);
+        Assert.True(elements[6] is Contour);
+        Assert.True(elements[7] is DstvNumeration);
+        Assert.True(elements[8] is DstvNumeration);
+    }
+
     /// <summary>
     ///     Example of a valid DSTV file header.
     ///     Expect a valid parse result
     /// </summary>
     [Fact]
-    public async Task Test_PRST37_2()
+    public async Task TestPRST372()
     {
         using var streamReader = new StreamReader($"{DataPath}/Data/RST37-2.nc");
         var dstvReader = new DstvReader();
 
-        var header = (await dstvReader.ParseAsync(streamReader)).Header;
+        var header = (await dstvReader.ParseAsync(streamReader).ConfigureAwait(false)).Header;
 
         Assert.NotNull(header);
 
@@ -151,14 +179,14 @@ public class Tests
     ///     Expect a <seealso cref="FreeTextTooLargeException" />
     /// </summary>
     [Fact]
-    public async Task Test_FreeTextTooLargeException()
+    public async Task TestFreeTextTooLargeException()
     {
         using var streamReader = new StreamReader($"{DataPath}/Data/E1.nc");
         var dstvReader = new DstvReader();
 
         var exception =
-            await Assert.ThrowsAsync<FreeTextTooLargeException>(() => dstvReader.ParseAsync(streamReader));
-        Assert.Equal(string.Format(Constants.FreeTextTooLargeExceptionMessage, 3), exception.Message);
+            await Assert.ThrowsAsync<FreeTextTooLargeException>(() => dstvReader.ParseAsync(streamReader)).ConfigureAwait(false);
+        Assert.Equal(string.Format(CultureInfo.InvariantCulture, Constants.FreeTextTooLargeExceptionMessage, 3), exception.Message);
     }
 
     /// <summary>
@@ -167,12 +195,12 @@ public class Tests
     ///     Expect a <seealso cref="EnumParseException{TEnum}" />
     /// </summary>
     [Fact]
-    public async Task Test_EnumParseException()
+    public async Task TestEnumParseException()
     {
         using var streamReader = new StreamReader($"{DataPath}/Data/E2.nc");
         var dstvReader = new DstvReader();
 
-        await Assert.ThrowsAsync<EnumParseException<CodeProfile>>(() => dstvReader.ParseAsync(streamReader));
+        await Assert.ThrowsAsync<EnumParseException<CodeProfile>>(() => dstvReader.ParseAsync(streamReader)).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -180,12 +208,12 @@ public class Tests
     ///     Expect a <seealso cref="MissingStartOfFileException" />
     /// </summary>
     [Fact]
-    public async Task Test_MissingStartOfFileException()
+    public async Task TestMissingStartOfFileException()
     {
         using var streamReader = new StreamReader($"{DataPath}/Data/E3.nc");
         var dstvReader = new DstvReader();
 
-        await Assert.ThrowsAsync<MissingStartOfFileException>(() => dstvReader.ParseAsync(streamReader));
+        await Assert.ThrowsAsync<MissingStartOfFileException>(() => dstvReader.ParseAsync(streamReader)).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -193,13 +221,13 @@ public class Tests
     ///     Expect a <seealso cref="DoubleParseException" />
     /// </summary>
     [Fact]
-    public async Task Test_DoubleParseException()
+    public async Task TestDoubleParseException()
     {
         using var streamReader = new StreamReader($"{DataPath}/Data/E4.nc");
         var dstvReader = new DstvReader();
 
-        var exception = await Assert.ThrowsAsync<DoubleParseException>(() => dstvReader.ParseAsync(streamReader));
-        Assert.Equal(string.Format(Constants.DoubleParseExceptionMessage, 11), exception.Message);
+        var exception = await Assert.ThrowsAsync<DoubleParseException>(() => dstvReader.ParseAsync(streamReader)).ConfigureAwait(false);
+        Assert.Equal(string.Format(CultureInfo.InvariantCulture, Constants.DoubleParseExceptionMessage, 11), exception.Message);
     }
 
     /// <summary>
@@ -207,14 +235,14 @@ public class Tests
     ///     Expect a <seealso cref="UnexpectedCharacterException" />
     /// </summary>
     [Fact]
-    public async Task Test_UnexpectedCharacterException()
+    public async Task TestUnexpectedCharacterException()
     {
         using var streamReader = new StreamReader($"{DataPath}/Data/E5.nc");
         var dstvReader = new DstvReader();
 
         var exception =
-            await Assert.ThrowsAsync<UnexpectedCharacterException>(() => dstvReader.ParseAsync(streamReader));
-        Assert.Equal(string.Format(Constants.UnexpectedCharacterExceptionMessage, 7, ' ', 'k'), exception.Message);
+            await Assert.ThrowsAsync<UnexpectedCharacterException>(() => dstvReader.ParseAsync(streamReader)).ConfigureAwait(false);
+        Assert.Equal(string.Format(CultureInfo.InvariantCulture, Constants.UnexpectedCharacterExceptionMessage, 7, ' ', 'k'), exception.Message);
     }
 
     /// <summary>
@@ -222,13 +250,13 @@ public class Tests
     ///     Expect a <seealso cref="IntegerParseException" />
     /// </summary>
     [Fact]
-    public async Task Test_IntegerParseException()
+    public async Task TestIntegerParseException()
     {
         using var streamReader = new StreamReader($"{DataPath}/Data/E6.nc");
         var dstvReader = new DstvReader();
 
-        var exception = await Assert.ThrowsAsync<IntegerParseException>(() => dstvReader.ParseAsync(streamReader));
-        Assert.Equal(string.Format(Constants.IntegerParseExceptionMessage, 8), exception.Message);
+        var exception = await Assert.ThrowsAsync<IntegerParseException>(() => dstvReader.ParseAsync(streamReader)).ConfigureAwait(false);
+        Assert.Equal(string.Format(CultureInfo.InvariantCulture, Constants.IntegerParseExceptionMessage, 8), exception.Message);
     }
 
     /// <summary>
@@ -236,14 +264,14 @@ public class Tests
     ///     Expect a <seealso cref="TupleParseException{TType}" />
     /// </summary>
     [Fact]
-    public async Task Test_TupleParseException()
+    public async Task TestTupleParseException()
     {
         using var streamReader = new StreamReader($"{DataPath}/Data/E7.nc");
         var dstvReader = new DstvReader();
 
         var exception =
-            await Assert.ThrowsAsync<TupleParseException<double>>(() => dstvReader.ParseAsync(streamReader));
-        Assert.Equal(string.Format(Constants.TupleParseExceptionMessage, 11, "1 to 2", nameof(Double)),
+            await Assert.ThrowsAsync<TupleParseException<double>>(() => dstvReader.ParseAsync(streamReader)).ConfigureAwait(false);
+        Assert.Equal(string.Format(CultureInfo.InvariantCulture, Constants.TupleParseExceptionMessage, 11, "1 to 2", nameof(Double)),
             exception.Message);
     }
 

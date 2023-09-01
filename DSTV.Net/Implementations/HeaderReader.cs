@@ -10,6 +10,7 @@ internal sealed class HeaderReader
     private const char Space = ' ';
     private const char Comment = '*';
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "Should be cleaned up later")]
     internal static async Task<DstvHeader> ParseAsync(ReaderContext context)
     {
         var reader = context.Source;
@@ -112,7 +113,6 @@ internal sealed class HeaderReader
             await Parse2XAsync(context).ConfigureAwait(false);
             return;
         }
-
 
         if (buffer[0] != Space) throw new UnexpectedCharacterException(context, Space, buffer[0]);
 

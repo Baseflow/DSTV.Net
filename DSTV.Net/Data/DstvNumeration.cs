@@ -3,7 +3,7 @@ using DSTV.Net.Implementations;
 
 namespace DSTV.Net.Data;
 
-public record DstvNumeration : LocatedElem
+public record DstvNumeration : LocatedElement
 {
     private readonly double _angle;
     private readonly double _letterHeight;

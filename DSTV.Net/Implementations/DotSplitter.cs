@@ -1,4 +1,3 @@
-using System;
 using DSTV.Net.Contracts;
 
 namespace DSTV.Net.Implementations;

@@ -20,17 +20,16 @@ public sealed class DstvReader : IDstvReader
         var context = new ReaderContext(reader);
 
         // First check if we encounter the right start of the file
-        if (await reader.ReadLineAsync().ConfigureAwait(false) != Constants.StartOfFile)
+        var startOfFile = await reader.ReadLineAsync().ConfigureAwait(false);
+        if (!string.Equals(startOfFile, Constants.StartOfFile, StringComparison.Ordinal))
             throw new MissingStartOfFileException(context);
         context.IncrementLineNumber();
 
         // Then read the header information
-        var result = new DstvRecord
+        return new DstvRecord
         {
             Header = await HeaderReader.ParseAsync(context).ConfigureAwait(false),
             Elements = await BodyReader.GetElementsAsync(context).ConfigureAwait(false)
         };
-
-        return result;
     }
 }

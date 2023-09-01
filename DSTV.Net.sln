@@ -1,8 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSTV.Net.Test", "DSTV.Net.Test\DSTV.Net.Test.csproj", "{96AAA004-121E-483B-8B76-7038189BE74F}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.33711.374
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DSTV.Net.Test", "DSTV.Net.Test\DSTV.Net.Test.csproj", "{96AAA004-121E-483B-8B76-7038189BE74F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSTV.Net", "DSTV.Net\DSTV.Net.csproj", "{C079A279-10A1-44E5-BE63-43B4773BF18B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DSTV.Net", "DSTV.Net\DSTV.Net.csproj", "{C079A279-10A1-44E5-BE63-43B4773BF18B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{EAC305B1-31C8-491E-ADF2-246DA316EB5A}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.github\workflows\BUILD_TEST_DSTV_NET.yml = .github\workflows\BUILD_TEST_DSTV_NET.yml
+		Directory.Build.props = Directory.Build.props
+		.github\workflows\PUBLISH_PACKAGES.yml = .github\workflows\PUBLISH_PACKAGES.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +30,11 @@ Global
 		{C079A279-10A1-44E5-BE63-43B4773BF18B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C079A279-10A1-44E5-BE63-43B4773BF18B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C079A279-10A1-44E5-BE63-43B4773BF18B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {173DC6E8-3658-4022-BB62-8B4FAB6A7339}
 	EndGlobalSection
 EndGlobal

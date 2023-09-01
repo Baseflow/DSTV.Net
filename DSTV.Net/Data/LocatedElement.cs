@@ -3,11 +3,11 @@ using System.Diagnostics.CodeAnalysis;
 namespace DSTV.Net.Data;
 
 [SuppressMessage("Designer", "CA1051:Do not declare visible instance fields", Justification = "This is a DTO")]
-public abstract record LocatedElem(string FlCode, double XCoord, double YCoord) : DstvElement
+public abstract record LocatedElement(string FlCode, double XCoord, double YCoord) : DstvElement
 {
     public string FlCode { get; set; } = FlCode;
 
-    public virtual bool Equals(LocatedElem? other)
+    public virtual bool Equals(LocatedElement? other)
     {
         if (other is null) return false;
 

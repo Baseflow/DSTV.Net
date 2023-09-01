@@ -1,22 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <Version>1.1.1</Version>
-        <PackageVersion>1.1.1</PackageVersion>
         <Description>DSTV.Net is an open-source library tailored for .NET platforms, providing a powerful utility for interacting with DSTV (also known as NC1 or Tekla) files. These files serve as a key industry standard in the steel industry, defining geometry and project information for steel plates.</Description>
         <PackageProjectUrl>https://github.com/Baseflow/DSTV.Net</PackageProjectUrl>
-        <PackageIcon>icon.png</PackageIcon>
-        <PackageTags>DSTV, Tekla, NC, NC1, SVG, Steel, Plates</PackageTags>
-        <PackageReleaseNotes>Corrected visualization for slots.</PackageReleaseNotes>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <TargetFrameworks>net6.0;net7.0;netstandard2.0</TargetFrameworks>
     </PropertyGroup>
-    <ItemGroup>
-        <None Include="$([MSBuild]::GetPathOfFileAbove('README.md', '$(MSBuildThisFileDirectory)../'))" Pack="true" PackagePath="\" />
-        <None Update="icon.png" Pack="true" PackagePath="\" />
-    </ItemGroup>
+
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
             <_Parameter1>DSTV.Net.Test</_Parameter1>

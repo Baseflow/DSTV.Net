@@ -9,5 +9,5 @@ internal class FineSplitter : ISplitter
     /// <summary>
     ///     Splitter for full carefully splitting - saving all lexemes
     /// </summary>
-    public string[] Split(string input) => input.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+    public string[] Split(string input) => input.Split(new [] {" "}, StringSplitOptions.RemoveEmptyEntries);
 }

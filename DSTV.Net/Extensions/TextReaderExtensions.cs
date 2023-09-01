@@ -1,6 +1,6 @@
-using System.Globalization;
 using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
+using System.Globalization;
 
 namespace DSTV.Net.Extensions;
 
@@ -86,7 +86,7 @@ internal static class TextReaderExtensions
     internal static async Task<int> ParseInteger(this TextReader reader, ReaderContext context)
     {
         var text = await reader.ReadLineAsync().ConfigureAwait(false);
-        if (!int.TryParse(text, out var value)) throw new IntegerParseException(context);
+        if (!int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var value)) throw new IntegerParseException(context);
 
         context.IncrementLineNumber();
 
@@ -96,6 +96,7 @@ internal static class TextReaderExtensions
     /// <summary>
     ///     Parses an enum of type <see cref="TEnum" />
     /// </summary>
+    /// <typeparam name="TEnum">The type of the Enum which needs to be parsed</typeparam>
     /// <param name="reader">An instance of a <see cref="TextReader" /> containing the DSTV source data</param>
     /// <param name="context">The active reader context</param>
     /// <returns>The integer read or an exception</returns>

@@ -1,28 +1,43 @@
-using System.Text.RegularExpressions;
 using DSTV.Net.Data;
 using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
+using System.Text.RegularExpressions;
 
 namespace DSTV.Net.Implementations;
 
 internal static class BodyReader
 {
+    /// <summary>
+    ///     Skips the item in <param name="items"></param> where the item is equal to <param name="contourType"></param> and executes the <param name="action"></param> on the remaining items.
+    /// </summary>
+    /// <param name="items">An enumerable of strings that will be iterated.</param>
+    /// <param name="contourType">The type of contour to handle with.</param>
+    /// <param name="action">The action to call for each non-skipped item.</param>
+    private static void SkipSelfAndExecute(this IEnumerable<string> items, ContourType contourType, Action<string> action)
+    {
+        foreach (var item in items)
+        {
+            try
+            {
+                if (item.Equals(contourType.ToString(), StringComparison.Ordinal)) continue;
+                action(item);
+            }
+            catch (DstvParseException dStVParseException)
+            {
+                Console.WriteLine(dStVParseException);
+            }
+        }
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "Should be cleaned up later")]
     public static async Task<IEnumerable<DstvElement>> GetElementsAsync(ReaderContext readerContext)
     {
         var outputList = new List<DstvElement>();
         var elemMap = await GetElementMapAsync(readerContext).ConfigureAwait(false);
         // holes & slots
-        var holeBlocks = elemMap.GetValueOrDefault(ContourType.BO);
-        if (holeBlocks != null)
-            foreach (var holeNote in holeBlocks.SelectMany(holeList => holeList))
-                try
-                {
-                    outputList.Add(DstvHole.CreateHole(holeNote));
-                }
-                catch (DstvParseException dStVParseException)
-                {
-                    Console.WriteLine(dStVParseException);
-                }
+        (elemMap.GetValueOrDefault(ContourType.BO) ?? new List<List<string>>())
+            .SelectMany(holeList => holeList)
+            .SkipSelfAndExecute(ContourType.BO, (holeNote) => outputList.Add(DstvHole.CreateHole(holeNote)));
 
         // outer contours
         var outerBorders = elemMap.GetValueOrDefault(ContourType.AK);
@@ -37,46 +52,18 @@ internal static class BodyReader
         var punchPointNotes = elemMap.GetValueOrDefault(ContourType.KO);
         AddContoursByType(outputList, punchPointNotes, ContourType.KO);
         // numeration
-        var numerationBlocks = elemMap.GetValueOrDefault(ContourType.SI);
-        if (numerationBlocks is not null)
-            foreach (var numNote in numerationBlocks.SelectMany(numList => numList))
-                try
-                {
-                    outputList.Add(DstvNumeration.CreateNumeration(numNote));
-                }
-                catch (DstvParseException dStVParseException)
-                {
-                    Console.WriteLine(dStVParseException);
-                }
-
+        (elemMap.GetValueOrDefault(ContourType.SI)?? new List<List<string>>())
+            .SelectMany(numNote => numNote)
+            .SkipSelfAndExecute(ContourType.SI, (numNote) => outputList.Add(DstvNumeration.CreateNumeration(numNote)));
         // bends
-        var bendBlocks = elemMap.GetValueOrDefault(ContourType.KA);
-        if (bendBlocks is not null)
-            foreach (var bendNote in bendBlocks.SelectMany(bendList => bendList))
-                try
-                {
-                    outputList.Add(DstvBend.CreateBend(bendNote));
-                }
-                catch (DstvParseException dStVParseException)
-                {
-                    Console.WriteLine(dStVParseException);
-                }
-
+        (elemMap.GetValueOrDefault(ContourType.KA) ?? new List<List<string>>())
+            .SelectMany(bendNote => bendNote)
+            .SkipSelfAndExecute(ContourType.KA, (bendNote) => outputList.Add(DstvBend.CreateBend(bendNote)));
         // cuts
-        var cutBlocks = elemMap.GetValueOrDefault(ContourType.SC);
-        if (cutBlocks is null) return outputList;
-
-        foreach (var cutNote in cutBlocks.SelectMany(cutList => cutList))
-            try
-            {
-                outputList.Add(DstvCut.CreateCut(cutNote));
-            }
-            catch (DstvParseException dStVParseException)
-            {
-                Console.WriteLine(dStVParseException);
-            }
-
-
+        (elemMap.GetValueOrDefault(ContourType.SC) ?? new List<List<string>>())
+            .SelectMany(cutNote => cutNote)
+            .SkipSelfAndExecute(ContourType.SC, (cutNote) => outputList.Add(DstvCut.CreateCut(cutNote)));
+       
         return outputList;
     }
 
@@ -89,14 +76,17 @@ internal static class BodyReader
         {
             List<DstvContourPoint> localList = new();
             foreach (var pointNote in noteList)
+            {
                 try
                 {
+                    if (pointNote.Equals(type.ToString(), StringComparison.Ordinal)) continue;
                     localList.Add(DstvContourPoint.CreatePoint(pointNote));
                 }
                 catch (DstvParseException dStVParseException)
                 {
                     Console.WriteLine(dStVParseException);
                 }
+            }
 
             try
             {
@@ -120,15 +110,15 @@ internal static class BodyReader
             var line = await reader.ReadLineAsync().ConfigureAwait(false);
             // if has END-mark.
             //  Maybe to be refactored for multi-peace file processing
-            if (line is null || line.Equals(Constants.EndOfFile, StringComparison.Ordinal) ||
+            if (line?.Equals(Constants.EndOfFile, StringComparison.Ordinal) != false ||
                 line.Equals(Constants.Indicator, StringComparison.Ordinal)) break;
 
             // if has quote-mark
-            if (Regex.IsMatch(line, "^\\*\\*.*")) continue;
+            if (Regex.IsMatch(line, "^\\*\\*.*", RegexOptions.None, TimeSpan.FromSeconds(1))) continue;
 
             if (CheckCodeLine(line))
             {
-                curKey = Enum.Parse<ContourType>(line);
+                curKey = (ContourType)Enum.Parse(typeof(ContourType), line);
                 if (!CheckIfMark(line)) Console.WriteLine(line + "Warning: unregistered DStV code-line detected: ");
 
                 if (!elemMap.ContainsKey(curKey)) elemMap.Add(curKey, new List<List<string>>());
@@ -148,10 +138,9 @@ internal static class BodyReader
     private static bool CheckIfMark(string str) =>
         // there are some more patterns in DStV, but they are too seldom and/or is not necessary yet
         Regex.IsMatch(str,
-            "^BO$|^SI$|^AK$|^IK$|^PU$|^KO$|^SC$|^UE$|^KA$|^EN$|^ST$|^E[0-9]$|^B[0-9]$|^S[0-9]$|^A[0-9]$|^I[0-9]$|^P[0-9]$|^K[0-9]$");
+            "^BO$|^SI$|^AK$|^IK$|^PU$|^KO$|^SC$|^UE$|^KA$|^EN$|^ST$|^E[0-9]$|^B[0-9]$|^S[0-9]$|^A[0-9]$|^I[0-9]$|^P[0-9]$|^K[0-9]$", RegexOptions.None, TimeSpan.FromSeconds(1));
 
-    private static bool CheckCodeLine(string str) => Regex.IsMatch(str, "^[A-Z0-9]{2}$");
-
+    private static bool CheckCodeLine(string str) => Regex.IsMatch(str, "^[A-Z0-9]{2}$", RegexOptions.None, TimeSpan.FromSeconds(1));
 
     public static string[] RemoveVoids(IEnumerable<string> toBeRefined)
     {

@@ -8,7 +8,7 @@
     <owners>$author$</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Corrected slot representation</releaseNotes>
+    <releaseNotes>Added support for netstandard 2.0</releaseNotes>
     <copyright>Copyright 2023</copyright>
     <tags>DSTV, Tekla, NC, NC1, SVG, Steel, Plates</tags>
   </metadata>
