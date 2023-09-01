@@ -8,7 +8,7 @@ namespace DSTV.Net.Implementations;
 internal static class BodyReader
 {
     /// <summary>
-    ///     Skips the item in <param name="items"></param> where the item is equal to <param name="contourType"></param> and executes the <param name="action"></param> on the remaining items.
+    ///     Skips the item in <paramref name="items"/> where the item is equal to <paramref name="contourType"/> and executes the <paramref name="action"/> on the remaining items.
     /// </summary>
     /// <param name="items">An enumerable of strings that will be iterated.</param>
     /// <param name="contourType">The type of contour to handle with.</param>
