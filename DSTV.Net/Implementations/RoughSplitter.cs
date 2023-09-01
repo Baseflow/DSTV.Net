@@ -12,7 +12,7 @@ internal class RoughSplitter : ISplitter
     /// </summary>
     public string[] Split(string input)
     {
-        var match = Regex.Match(input, "(?<!\\s|\\D)[a-z]+(?!\\s+|\\D)|\\s+", RegexOptions.None, TimeSpan.FromSeconds(1));
-        return match.Success ? match.Value.Split(match.Value) : new[] { input };
+        var match = Regex.Match(input, @"(?<!\s|\D)[a-z]+(?!\s+|\D)|\s+", RegexOptions.None, TimeSpan.FromSeconds(1));
+        return match.Success ? match.Value.Split(new [] { match.Value }, StringSplitOptions.None) : new[] { input };
     }
 }

@@ -118,7 +118,7 @@ internal static class BodyReader
 
             if (CheckCodeLine(line))
             {
-                curKey = Enum.Parse<ContourType>(line);
+                curKey = (ContourType)Enum.Parse(typeof(ContourType), line);
                 if (!CheckIfMark(line)) Console.WriteLine(line + "Warning: unregistered DStV code-line detected: ");
 
                 if (!elemMap.ContainsKey(curKey)) elemMap.Add(curKey, new List<List<string>>());

@@ -27,7 +27,7 @@ public record DstvElement
         if (separated is null) throw new ArgumentNullException(nameof(separated));
         for (var i = skipFirst ? 1 : 0; i < separated.Length - (skipLast ? 1 : 0); i++)
         {
-            foreach (var match in Regex.Matches(separated[i], "([^.\\d-]+)", RegexOptions.ExplicitCapture, TimeSpan.FromSeconds(1)).AsEnumerable())
+            foreach (Match match in Regex.Matches(separated[i], "([^.\\d-]+)", RegexOptions.ExplicitCapture, TimeSpan.FromSeconds(1)))
                 separated[i] = separated[i].Replace(match.Value, string.Empty, StringComparison.Ordinal);
         }
 
