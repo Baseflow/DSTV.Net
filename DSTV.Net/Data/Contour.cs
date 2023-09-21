@@ -72,52 +72,59 @@ public record Contour : DstvElement
     {
         var sb = new StringBuilder();
         var sbLine = new StringBuilder();
-        var isFirst = true;
         var previous = new DstvContourPoint("x", 0, 0, 0);
         foreach (var point in _pointList)
         {
-            if (isFirst)
+            if (_pointList.IndexOf(point) == 0)
             {
-                sb.Append('M').Append(point.XCoord).Append(',').Append(point.YCoord);
+                sb.Append("M ").Append(point.XCoord).Append(' ').Append(point.YCoord);
+                previous = point;
+                continue;
             }
-            else
+            sb.Append(' ');
+            var radius = previous.Radius;
+            switch (radius)
             {
-                sb.Append(' ');
-                var radius = previous.Radius;
-                if (radius > 0)
-                {
-                    if (previous.YCoord > point.YCoord && point.XCoord > previous.XCoord) // left-top corner
-                        sb.Append('Q').Append(previous.XCoord).Append(',').Append(point.YCoord)
-                            .Append(',').Append(point.XCoord).Append(',').Append(point.YCoord);
-                    else if (previous.YCoord < point.YCoord && point.XCoord > previous.XCoord) // top-right corner
-                        sb.Append('Q').Append(point.XCoord).Append(',').Append(previous.YCoord)
-                            .Append(',').Append(point.XCoord).Append(',').Append(point.YCoord);
-                    else if (previous.YCoord < point.YCoord && point.XCoord < previous.XCoord) // right-bottom corner
-                        sb.Append('Q').Append(previous.XCoord).Append(',').Append(point.YCoord)
-                            .Append(',').Append(point.XCoord).Append(',').Append(point.YCoord);
-                    else if (previous.YCoord > point.YCoord && point.XCoord < previous.XCoord) // bottom-left corner
-                        sb.Append('Q').Append(point.XCoord).Append(',').Append(previous.YCoord)
-                            .Append(',').Append(point.XCoord).Append(',').Append(point.YCoord);
-                }
-                else
-                {
+                // top-right corner Quadratic Bézier curve
+                case > 0 when previous.YCoord < point.YCoord && point.XCoord > previous.XCoord:
+                    sb.Append("Q ").Append(point.XCoord).Append(' ').Append(previous.YCoord)
+                        .Append(' ').Append(point.XCoord).Append(' ').Append(point.YCoord);
+                    break;
+                // right-bottom corner Quadratic Bézier curve
+                case > 0 when previous.YCoord < point.YCoord && point.XCoord < previous.XCoord:
+                    sb.Append("Q ").Append(previous.XCoord).Append(' ').Append(point.YCoord)
+                        .Append(' ').Append(point.XCoord).Append(' ').Append(point.YCoord);
+                    break;
+                // bottom-left corner Quadratic Bézier curve
+                case > 0 when previous.YCoord > point.YCoord && point.XCoord < previous.XCoord:
+                    sb.Append("Q ").Append(point.XCoord).Append(' ').Append(previous.YCoord)
+                        .Append(' ').Append(point.XCoord).Append(' ').Append(point.YCoord);
+                    break;
+                // in all other cases we use arc if the radius is not 0
+                case > 0:
+                case < 0:
+                    sb.Append("A ").Append(-radius).Append(' ').Append(-radius).Append(" 0 0 0 ").Append(point.XCoord)
+                        .Append(' ').Append(point.YCoord);
+                    break;
+                // straight Line
+                default:
                     sb.Append('L').Append(point.XCoord).Append(',').Append(point.YCoord);
-                }
-
-                if (previous is DstvSkewedPoint screwingPoint)
-                {
-                    sbLine.Append("<line x1=\"").Append(screwingPoint.XCoord).Append("\" y1=\"")
-                        .Append(screwingPoint.YCoord).Append("\" x2=\"").Append(point.XCoord).Append("\" y2=\"")
-                        .Append(point.YCoord).Append("\" stroke=\"red\" stroke-width=\"4\" />");
-                }
+                    break;
             }
 
-            isFirst = false;
+            // if previous point is screwing point, we draw a line from it to current point to show a bezel line
+            if (previous is DstvSkewedPoint screwingPoint)
+            {
+                sbLine.Append("<line x1=\"").Append(screwingPoint.XCoord).Append("\" y1=\"")
+                    .Append(screwingPoint.YCoord).Append("\" x2=\"").Append(point.XCoord).Append("\" y2=\"")
+                    .Append(point.YCoord).Append("\" stroke=\"red\" stroke-width=\"4\" />");
+            }
+            
             previous = point;
         }
 
         var points = sb.ToString();
-        //var points = string.Join(" ", _pointList.Select(d => _pointList.IndexOf(d) == 0 ? "M" : d is DstvContourPoint cp && cp.Radius >0 ? "Q" : "L").Zip(_pointList, (a, b) => $"{a}{b.XCoord},{b.YCoord}"));
-        return $"<path d=\"{points}\" fill=\"gray\" stroke=\"black\" stroke-width=\"0.5\" />{sbLine}";
+        var color = _type == ContourType.AK ? "grey" : "white";
+        return $"<path d=\"{points}\" fill=\"{color}\" stroke=\"black\" stroke-width=\"0.5\" />{sbLine}";
     }
 }
