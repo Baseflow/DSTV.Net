@@ -5,6 +5,7 @@ on:
     branches: [ main ]
     paths:
       - 'DSTV.Net/DSTV.Net.csproj'
+      - 'Directory.Build.props'
       - '.github/workflows/PUBLISH_PACKAGES.yml'
 
 jobs:
