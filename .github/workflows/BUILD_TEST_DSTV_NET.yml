@@ -2,16 +2,8 @@ name: Build and Unit Test Dstv reader
 
 on:
   push:
-    paths:
-      - 'DSTV.Net/**'
-      - 'DSTV.Net.Tests/**'
-      - '.github/workflows/BUILD_TEST_DSTV_NET.yml'
     branches: [ develop, main ]
   pull_request:
-    paths:
-      - 'DSTV.Net/**'
-      - 'DSTV.Net.Tests/**'
-      - '.github/workflows/BUILD_TEST_DSTV_NET.yml'
     branches: [ develop, main ]
 
 jobs:
