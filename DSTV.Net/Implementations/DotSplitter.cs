@@ -16,7 +16,7 @@ internal class DotSplitter : ISplitter
         {
             var prevPos = 0;
             if (i > 0) prevPos = dotPoss[i - 1];
-            dotPoss[i] = input.IndexOf(".", prevPos + 1, StringComparison.Ordinal);
+            dotPoss[i] = input.IndexOf('.', prevPos + 1);
         }
 
         var outArr = new string[n];
