@@ -7,15 +7,16 @@ namespace DSTV.Net.Data;
 [SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "This is a DTO")]
 public record DstvHole : LocatedElement
 {
-    //0 if through
-    private readonly double _depth;
-    protected readonly double Diam;
+    // 0 if through
+    public double Depth { get; }
 
-    protected DstvHole(string flCode, double xCoord, double yCoord, double diam, double depth) : base(flCode, xCoord,
-        yCoord)
+    public double Diameter { get; }
+
+    protected DstvHole(string flCode, double xCoord, double yCoord, double diam, double depth)
+        : base(flCode, xCoord, yCoord)
     {
-        Diam = diam;
-        _depth = depth;
+        Diameter = diam;
+        Depth = depth;
     }
 
 
@@ -51,8 +52,8 @@ public record DstvHole : LocatedElement
     }
 
     public override string ToString() =>
-        $"DStVHole : flCode='{FlCode}', xCoord={XCoord}, yCoord={YCoord}, diam={Diam}, depth={_depth}";
+        $"DStVHole : flCode='{FlCode}', xCoord={XCoord}, yCoord={YCoord}, diam={Diameter}, depth={Depth}";
 
     public override string ToSvg() =>
-        $"<circle cx=\"{XCoord:F}\" cy=\"{YCoord:F}\" r=\"{Diam / 2:F}\" fill=\"white\" />";
+        $"<circle cx=\"{XCoord:F}\" cy=\"{YCoord:F}\" r=\"{Diameter / 2:F}\" fill=\"white\" />";
 }

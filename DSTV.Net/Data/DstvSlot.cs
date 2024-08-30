@@ -2,21 +2,30 @@ namespace DSTV.Net.Data;
 
 public record DstvSlot : DstvHole
 {
-    private readonly double _slotAng;
+    public double SlotAngle { get; }
 
     //optional, for slots only
-    private readonly double _slotLen;
-    private readonly double _slotWidth;
+    public double SlotLength { get; }
 
-    public DstvSlot(string flCode, double xCoord, double yCoord, double diam, double depth, double slotLen,
-        double slotWidth, double slotAng) : base(flCode, xCoord, yCoord, diam, depth)
+    public double SlotWidth { get; }
+
+    public DstvSlot(
+        string flCode, 
+        double xCoord, 
+        double yCoord, 
+        double diam, 
+        double depth, 
+        double slotLen,
+        double slotWidth, 
+        double slotAng) 
+        : base(flCode, xCoord, yCoord, diam, depth)
     {
-        _slotLen = slotLen;
-        _slotWidth = slotWidth;
-        _slotAng = slotAng;
+        SlotLength = slotLen;
+        SlotWidth = slotWidth;
+        SlotAngle = slotAng;
     }
 
-    public override string ToString() => $"{base.ToString()}, SlotLength : {_slotLen}, SlothWidth : {_slotWidth}, SlotAngle : {_slotAng}";
+    public override string ToString() => $"{base.ToString()}, SlotLength : {SlotLength}, SlothWidth : {SlotWidth}, SlotAngle : {SlotAngle}";
 
-    public override string ToSvg() => $"<rect x=\"{XCoord}\" y=\"{YCoord}\" width=\"{_slotLen + Diam}\" height=\"{Diam}\" fill=\"white\" rx=\"{Diam / 2}\" />";
+    public override string ToSvg() => $"<rect x=\"{XCoord}\" y=\"{YCoord}\" width=\"{SlotLength + Diameter}\" height=\"{Diameter}\" fill=\"white\" rx=\"{Diameter / 2}\" />";
 }

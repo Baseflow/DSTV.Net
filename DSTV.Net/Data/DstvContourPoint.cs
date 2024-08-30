@@ -5,15 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace DSTV.Net.Data;
 
 [SuppressMessage("Designer", "CA1051:Do not declare visible instance fields", Justification = "This is a DTO")]
-public record DstvContourPoint : LocatedElement
+public record DstvContourPoint(string FlCode, double XCoord, double YCoord, double Radius) : LocatedElement(FlCode, XCoord, YCoord)
 {
-    protected readonly double _radius;
-
-    public DstvContourPoint(string flCode, double xCoord, double yCoord, double radius) :
-        base(flCode, xCoord, yCoord) => _radius = radius;
-
-    public double Radius => _radius;
-
     public static DstvContourPoint CreatePoint(string dstvElement)
     {
         var separated = GetDataVector(dstvElement, FineSplitter.Instance);
@@ -70,5 +63,5 @@ public record DstvContourPoint : LocatedElement
     }
 
     public override string ToString() =>
-        $"DStVContourPoint : radius={_radius}, flCode=\'{FlCode}\', xCoord={XCoord}, yCoord={YCoord}";
+        $"DStVContourPoint : radius={Radius}, flCode=\'{FlCode}\', xCoord={XCoord}, yCoord={YCoord}";
 }
