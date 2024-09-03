@@ -275,6 +275,36 @@ public class Tests
             exception.Message);
     }
 
+    /// <summary>
+    ///     Example with notch points
+    ///     Expect valid IsNotch flag for points
+    /// </summary>
+    [Fact]
+    public async Task TestIsNotchPoint()
+    {
+        using var streamReader = new StreamReader($"{DataPath}/Data/notch.nc1");
+        var dstvReader = new DstvReader();
+
+        var result = await dstvReader.ParseAsync(streamReader).ConfigureAwait(false);
+        var dstvElement = result.Elements.First();
+
+        Assert.IsType<Contour>(dstvElement);
+        var contour = (Contour)dstvElement;
+
+        Assert.Equal(ContourType.AK, contour.Type);
+        var actualPoints = contour.Points.ToArray();
+
+        Assert.Equal(6, actualPoints.Length);
+        // First notch "w" point with flange code
+        Assert.True(actualPoints[1].IsNotch);
+        // First not notch point with flange code
+        Assert.False(actualPoints[2].IsNotch);
+        // Second notch "t" point without flange code
+        Assert.True(actualPoints[3].IsNotch);
+        // Second not notch point without flange code
+        Assert.False(actualPoints[4].IsNotch);
+    }
+
     // /// <summary>
     // ///     Example of an invalid end in the DSTV file
     // ///     Expect a <seealso cref="UnexpectedEndException" />
