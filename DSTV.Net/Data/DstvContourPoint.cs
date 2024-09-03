@@ -37,7 +37,7 @@ public record DstvContourPoint(string FlCode, double XCoord, double YCoord, bool
             blunting1 = double.Parse(separated[4], Constants.ParserCultureInfo);
             if (ang1 == 0 && blunting1 == 0) return new DstvContourPoint(flCode, xCoord, yCoord, isNotchPoint, rad);
 
-            return new DstvSkewedPoint(flCode, xCoord, yCoord, rad, ang1, blunting1, 0, 0);
+            return new DstvSkewedPoint(flCode, xCoord, yCoord, isNotchPoint, rad, ang1, blunting1, 0, 0);
         }
 
         if (separated.Length == 7)
@@ -47,7 +47,7 @@ public record DstvContourPoint(string FlCode, double XCoord, double YCoord, bool
             blunting1 = double.Parse(separated[5], Constants.ParserCultureInfo);
             if (ang1 == 0 && blunting1 == 0) return new DstvContourPoint(flCode, xCoord, yCoord, isNotchPoint, rad);
 
-            return new DstvSkewedPoint(flCode, xCoord, yCoord, rad, ang1, blunting1, ang2, 0);
+            return new DstvSkewedPoint(flCode, xCoord, yCoord, isNotchPoint, rad, ang1, blunting1, ang2, 0);
         }
 
         if (separated.Length == 8)
@@ -64,7 +64,7 @@ public record DstvContourPoint(string FlCode, double XCoord, double YCoord, bool
                 return new DstvContourPoint(flCode, xCoord, yCoord, isNotchPoint, rad);
             }
 
-            return new DstvSkewedPoint(flCode, xCoord, yCoord, rad, ang1, blunting1, ang2, blunting2);
+            return new DstvSkewedPoint(flCode, xCoord, yCoord, isNotchPoint, rad, ang1, blunting1, ang2, blunting2);
         }
 
         throw new DstvParseException("Illegal data vector format (AK/IK)");
@@ -72,7 +72,7 @@ public record DstvContourPoint(string FlCode, double XCoord, double YCoord, bool
 
     private static bool IsNotchPoint(string yCoordValue)
     {
-        var numberRegexString = "[^.\\d-]+";
+        var numberRegexString = "[.\\d-]+";
         var regexString = $"{numberRegexString}[wt]";
         return Regex.IsMatch(yCoordValue, regexString, RegexOptions.None, TimeSpan.FromSeconds(1));
     }

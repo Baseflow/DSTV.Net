@@ -11,12 +11,14 @@ public record Contour : DstvElement
     private readonly List<DstvContourPoint> _pointList;
 
     // ReSharper disable once NotAccessedField.Local
-    private readonly ContourType _type;
+    public ContourType Type { get; }
+
+    public IEnumerable<DstvContourPoint> Points => _pointList.AsEnumerable();
 
     private Contour(List<DstvContourPoint> pointList, ContourType type)
     {
         _pointList = pointList;
-        _type = type;
+        Type = type;
     }
 
     [SuppressMessage("Design", "CA1002:Do not expose generic lists", Justification = "This is a record")]
@@ -72,7 +74,7 @@ public record Contour : DstvElement
     {
         var sb = new StringBuilder();
         var sbLine = new StringBuilder();
-        var previous = new DstvContourPoint("x", 0, 0, 0);
+        var previous = new DstvContourPoint("x", 0, 0, false, 0);
         foreach (var point in _pointList)
         {
             if (_pointList.IndexOf(point) == 0)
@@ -124,7 +126,7 @@ public record Contour : DstvElement
         }
 
         var points = sb.ToString();
-        var color = _type == ContourType.AK ? "grey" : "white";
+        var color = Type == ContourType.AK ? "grey" : "white";
         return $"<path d=\"{points}\" fill=\"{color}\" stroke=\"black\" stroke-width=\"0.5\" />{sbLine}";
     }
 }
