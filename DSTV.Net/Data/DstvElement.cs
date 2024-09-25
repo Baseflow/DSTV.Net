@@ -9,7 +9,11 @@ public record DstvElement
 {
     protected static string[] GetDataVector(string dstvElementLine, ISplitter splitter)
     {
+#if NET
+        ArgumentNullException.ThrowIfNull(splitter, nameof(splitter));
+#else
         if (splitter is null) throw new ArgumentNullException(nameof(splitter));
+#endif
         if (Regex.IsMatch(dstvElementLine, "^\\*\\*.*", RegexOptions.None, TimeSpan.FromSeconds(1)))
             throw new DstvParseException("Attempt to get data from quote-line detected");
 
@@ -24,7 +28,11 @@ public record DstvElement
 
     protected static string[] CorrectSplits(string[] separated, bool skipFirst = false, bool skipLast = false)
     {
+#if NET
+        ArgumentNullException.ThrowIfNull(separated, nameof(separated));
+#else
         if (separated is null) throw new ArgumentNullException(nameof(separated));
+#endif
         for (var i = skipFirst ? 1 : 0; i < separated.Length - (skipLast ? 1 : 0); i++)
         {
             foreach (Match match in Regex.Matches(separated[i], "([^.\\d-]+)", RegexOptions.ExplicitCapture, TimeSpan.FromSeconds(1)))
