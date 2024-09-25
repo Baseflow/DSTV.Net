@@ -7,6 +7,11 @@ namespace DSTV.Net.Data;
 [SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "This is a DTO")]
 public record DstvHole : LocatedElement
 {
+    /// <summary>
+    /// Gets the diameter of the hole. Represents the size of the hole in the object, defined during construction.
+    /// </summary>
+    public double Diameter => Diam;
+
     //0 if through
     private readonly double _depth;
     protected readonly double Diam;

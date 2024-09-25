@@ -8,6 +8,16 @@ namespace DSTV.Net.Data;
 [SuppressMessage("Design", "CA1303:Do not pass literals as localized parameters", Justification = "Will fix later")]
 public record Contour : DstvElement
 {
+    /// <summary>
+    /// Gets the list of contour points that define the shape of the contour.
+    /// </summary>
+    public IReadOnlyList<DstvContourPoint> PointList => _pointList;
+
+    /// <summary>
+    /// Gets the <see cref="ContourType"/> of the contour.
+    /// </summary>
+    public ContourType Type => _type;
+
     private readonly List<DstvContourPoint> _pointList;
 
     // ReSharper disable once NotAccessedField.Local
