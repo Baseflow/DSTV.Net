@@ -15,7 +15,11 @@ public sealed class DstvReader : IDstvReader
 
     public async Task<IDstv> ParseAsync(TextReader reader)
     {
+#if NET
+        ArgumentNullException.ThrowIfNull(reader, nameof(reader));
+#else
         if (reader == null) throw new ArgumentNullException(nameof(reader));
+#endif
 
         var context = new ReaderContext(reader);
 
