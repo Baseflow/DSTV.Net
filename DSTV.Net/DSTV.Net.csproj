@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Description>DSTV.Net is an open-source library tailored for .NET platforms, providing a powerful utility for interacting with DSTV (also known as NC1 or Tekla) files. These files serve as a key industry standard in the steel industry, defining geometry and project information for steel plates.</Description>
         <PackageProjectUrl>https://github.com/Baseflow/DSTV.Net</PackageProjectUrl>
-        <TargetFrameworks>net6.0;net7.0;netstandard2.0</TargetFrameworks>
+        <TargetFrameworks>net6.0;net7.0;net8.0;netstandard2.0</TargetFrameworks>
 		<Version>1.2.1</Version>
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>DSTV.Net.snk</AssemblyOriginatorKeyFile>
