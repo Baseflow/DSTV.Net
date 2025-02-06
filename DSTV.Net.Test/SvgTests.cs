@@ -8,6 +8,7 @@ namespace DSTV.Net.Test;
 ///     this test class makes sure all the svg generation works as expected.
 ///     testing svg generation will also ensure all geometrical data is still parsed correctly.
 /// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1515", Justification = "Test classes must be public for xUnit")]
 public class SvgTests
 {
     [Theory]

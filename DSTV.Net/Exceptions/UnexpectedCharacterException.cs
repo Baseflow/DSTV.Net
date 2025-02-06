@@ -1,5 +1,6 @@
 using DSTV.Net.Implementations;
 using System.Globalization;
+using System.Text;
 
 namespace DSTV.Net.Exceptions;
 
@@ -8,12 +9,21 @@ namespace DSTV.Net.Exceptions;
 /// </summary>
 public class UnexpectedCharacterException : ParseException
 {
+#if NET8_0_OR_GREATER
+    public UnexpectedCharacterException(ReaderContext context, char expected, char actual)
+        : base(context,
+            string.Format(CultureInfo.InvariantCulture, UnexpectedCharacterMessageFormat,
+                context?.LineNumber, expected, actual))
+    {
+    }
+#else
     public UnexpectedCharacterException(ReaderContext context, char expected, char actual)
         : base(context,
             string.Format(CultureInfo.InvariantCulture, Constants.UnexpectedCharacterExceptionMessage,
                 context?.LineNumber, expected, actual))
     {
     }
+#endif
 
     protected UnexpectedCharacterException(ReaderContext context) : base(context)
     {
