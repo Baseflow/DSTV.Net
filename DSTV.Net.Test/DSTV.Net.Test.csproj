@@ -3,9 +3,9 @@
     <PropertyGroup>
         <IsPackable>false</IsPackable>
         <Title>Testclass for DSTV.Net</Title>
-		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+		<TargetFrameworks>net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
 		<SignAssembly>True</SignAssembly>
-		<AssemblyOriginatorKeyFile>C:\Users\marcello\source\GitHub\DSTV.Net\DSTV.Net\DSTV.Net.snk</AssemblyOriginatorKeyFile>
+		<AssemblyOriginatorKeyFile>..\DSTV.Net\DSTV.Net.snk</AssemblyOriginatorKeyFile>
     </PropertyGroup>
 
     <ItemGroup>

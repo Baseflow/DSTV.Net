@@ -1,14 +1,23 @@
 using DSTV.Net.Implementations;
 using System.Globalization;
+using System.Text;
 
 namespace DSTV.Net.Exceptions;
 
 public class DoubleParseException : ParseException
 {
-    public DoubleParseException(ReaderContext context) : base(context,
-        string.Format(CultureInfo.InvariantCulture, Constants.DoubleParseExceptionMessage, context?.LineNumber))
+#if NET8_0_OR_GREATER
+    public DoubleParseException(ReaderContext context)
+        : base(context, string.Format(CultureInfo.InvariantCulture, DoubleParseExceptionMessageFormat, context?.LineNumber))
     {
     }
+#else
+    public DoubleParseException(ReaderContext context) : base(context,
+            string.Format(CultureInfo.InvariantCulture, Constants.DoubleParseExceptionMessage, context?.LineNumber))
+    {
+    }
+#endif
+
 
     protected DoubleParseException(ReaderContext context, string message) : base(context, message)
     {

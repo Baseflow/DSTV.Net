@@ -7,6 +7,7 @@ using Xunit;
 
 namespace DSTV.Net.Test;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1515", Justification = "Test classes must be public for xUnit")]
 public class Tests
 {
     private const string DataPath = "../../../";
@@ -186,7 +187,12 @@ public class Tests
 
         var exception =
             await Assert.ThrowsAsync<FreeTextTooLargeException>(() => dstvReader.ParseAsync(streamReader)).ConfigureAwait(false);
+
+#if NET8_0_OR_GREATER
+        Assert.Equal(string.Format(CultureInfo.InvariantCulture, ParseException.FreeTextTooLargeMessageFormat, 3), exception.Message);
+#else
         Assert.Equal(string.Format(CultureInfo.InvariantCulture, Constants.FreeTextTooLargeExceptionMessage, 3), exception.Message);
+#endif
     }
 
     /// <summary>
@@ -227,7 +233,11 @@ public class Tests
         var dstvReader = new DstvReader();
 
         var exception = await Assert.ThrowsAsync<DoubleParseException>(() => dstvReader.ParseAsync(streamReader)).ConfigureAwait(false);
+#if NET8_0_OR_GREATER
+        Assert.Equal(string.Format(CultureInfo.InvariantCulture, ParseException.DoubleParseExceptionMessageFormat, 11), exception.Message);
+#else
         Assert.Equal(string.Format(CultureInfo.InvariantCulture, Constants.DoubleParseExceptionMessage, 11), exception.Message);
+#endif
     }
 
     /// <summary>
@@ -242,7 +252,11 @@ public class Tests
 
         var exception =
             await Assert.ThrowsAsync<UnexpectedCharacterException>(() => dstvReader.ParseAsync(streamReader)).ConfigureAwait(false);
+#if NET8_0_OR_GREATER
+        Assert.Equal(string.Format(CultureInfo.InvariantCulture, ParseException.UnexpectedCharacterMessageFormat, 7, ' ', 'k'), exception.Message);
+#else
         Assert.Equal(string.Format(CultureInfo.InvariantCulture, Constants.UnexpectedCharacterExceptionMessage, 7, ' ', 'k'), exception.Message);
+#endif
     }
 
     /// <summary>
@@ -256,7 +270,11 @@ public class Tests
         var dstvReader = new DstvReader();
 
         var exception = await Assert.ThrowsAsync<IntegerParseException>(() => dstvReader.ParseAsync(streamReader)).ConfigureAwait(false);
+#if NET8_0_OR_GREATER
+        Assert.Equal(string.Format(CultureInfo.InvariantCulture, ParseException.IntegerParseExceptionMessageFormat, 8), exception.Message);
+#else
         Assert.Equal(string.Format(CultureInfo.InvariantCulture, Constants.IntegerParseExceptionMessage, 8), exception.Message);
+#endif
     }
 
     /// <summary>
@@ -271,8 +289,13 @@ public class Tests
 
         var exception =
             await Assert.ThrowsAsync<TupleParseException<double>>(() => dstvReader.ParseAsync(streamReader)).ConfigureAwait(false);
+#if NET8_0_OR_GREATER
+        Assert.Equal(string.Format(CultureInfo.InvariantCulture, ParseException.TupleParseExceptionMessage, 11, "1 to 2", nameof(Double)),
+            exception.Message);
+#else
         Assert.Equal(string.Format(CultureInfo.InvariantCulture, Constants.TupleParseExceptionMessage, 11, "1 to 2", nameof(Double)),
             exception.Message);
+#endif
     }
 
     // /// <summary>
