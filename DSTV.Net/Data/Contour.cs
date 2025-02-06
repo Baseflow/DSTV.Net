@@ -33,7 +33,11 @@ public record Contour : DstvElement
     [SuppressMessage("Design", "MA0016:Prefer returning collection abstraction instead of implementation", Justification = "This is a record")]
     public static IEnumerable<Contour> CreateSeveralContours(List<DstvContourPoint> pointList, ContourType type)
     {
+#if NET
+        ArgumentNullException.ThrowIfNull(pointList, nameof(pointList));
+#else
         if (pointList is null) throw new ArgumentNullException(nameof(pointList));
+#endif
 
         List<Contour> outList = new();
         if (type is ContourType.AK or ContourType.IK)
