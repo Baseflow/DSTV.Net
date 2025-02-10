@@ -13,14 +13,11 @@ public record Contour : DstvElement
     /// </summary>
     public IReadOnlyList<DstvContourPoint> PointList => _pointList;
 
+    private readonly List<DstvContourPoint> _pointList;
+
     /// <summary>
     /// Gets the <see cref="ContourType"/> of the contour.
     /// </summary>
-    public ContourType Type => _type;
-
-    private readonly List<DstvContourPoint> _pointList;
-
-    // ReSharper disable once NotAccessedField.Local
     public ContourType Type { get; }
 
     public IEnumerable<DstvContourPoint> Points => _pointList.AsEnumerable();
