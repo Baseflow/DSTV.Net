@@ -17,9 +17,9 @@ public class SvgTests
     public async Task TestGenerateProduct2(string file) {
         using var streamReader = new StreamReader(file);
         var dstvReader = new DstvReader();
-        var dstv = await dstvReader.ParseAsync(streamReader).ConfigureAwait(false);
+        var dstv = await dstvReader.ParseAsync(streamReader);
         var svg = dstv.ToSvg();
         var svgFile = Path.ChangeExtension(file, ".svg");
-        Assert.Equal(await File.ReadAllTextAsync(svgFile).ConfigureAwait(false), svg);
+        Assert.Equal(await File.ReadAllTextAsync(svgFile), svg);
     }
 }
