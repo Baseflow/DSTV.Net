@@ -10,6 +10,9 @@ public record DstvHole : LocatedElement
     // 0 if through
     public double Depth { get; }
 
+    /// <summary>
+    /// Gets the diameter of the hole. Represents the size of the hole in the object, defined during construction.
+    /// </summary>
     public double Diameter { get; }
 
     protected DstvHole(string flCode, double xCoord, double yCoord, double diam, double depth)
