@@ -10,7 +10,7 @@ public record DstvElement
     protected static string[] GetDataVector(string dstvElementLine, ISplitter splitter)
     {
 #if NET
-        ArgumentNullException.ThrowIfNull(splitter, nameof(splitter));
+        ArgumentNullException.ThrowIfNull(splitter);
 #else
         if (splitter is null) throw new ArgumentNullException(nameof(splitter));
 #endif
@@ -29,7 +29,7 @@ public record DstvElement
     protected static string[] CorrectSplits(string[] separated, bool skipFirst = false, bool skipLast = false)
     {
 #if NET
-        ArgumentNullException.ThrowIfNull(separated, nameof(separated));
+        ArgumentNullException.ThrowIfNull(separated);
 #else
         if (separated is null) throw new ArgumentNullException(nameof(separated));
 #endif

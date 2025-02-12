@@ -33,12 +33,12 @@ public record Contour : DstvElement
     public static IEnumerable<Contour> CreateSeveralContours(List<DstvContourPoint> pointList, ContourType type)
     {
 #if NET
-        ArgumentNullException.ThrowIfNull(pointList, nameof(pointList));
+        ArgumentNullException.ThrowIfNull(pointList);
 #else
         if (pointList is null) throw new ArgumentNullException(nameof(pointList));
 #endif
 
-        List<Contour> outList = new();
+        List<Contour> outList = [];
         if (type is ContourType.AK or ContourType.IK)
         {
             outList.Add(new Contour(pointList, type));
@@ -85,7 +85,7 @@ public record Contour : DstvElement
     {
         var sb = new StringBuilder();
         var sbLine = new StringBuilder();
-        var previous = new DstvContourPoint("x", 0, 0, false, 0);
+        var previous = new DstvContourPoint("x", 0, 0, IsNotch: false, 0);
         foreach (var point in _pointList)
         {
             if (_pointList.IndexOf(point) == 0)
@@ -132,7 +132,7 @@ public record Contour : DstvElement
                     .Append(screwingPoint.YCoord).Append("\" x2=\"").Append(point.XCoord).Append("\" y2=\"")
                     .Append(point.YCoord).Append("\" stroke=\"red\" stroke-width=\"4\" />");
             }
-            
+
             previous = point;
         }
 

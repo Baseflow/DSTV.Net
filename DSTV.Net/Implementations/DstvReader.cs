@@ -16,7 +16,7 @@ public sealed class DstvReader : IDstvReader
     public async Task<IDstv> ParseAsync(TextReader reader)
     {
 #if NET
-        ArgumentNullException.ThrowIfNull(reader, nameof(reader));
+        ArgumentNullException.ThrowIfNull(reader);
 #else
         if (reader == null) throw new ArgumentNullException(nameof(reader));
 #endif
@@ -33,7 +33,7 @@ public sealed class DstvReader : IDstvReader
         return new DstvRecord
         {
             Header = await HeaderReader.ParseAsync(context).ConfigureAwait(false),
-            Elements = await BodyReader.GetElementsAsync(context).ConfigureAwait(false)
+            Elements = await BodyReader.GetElementsAsync(context).ConfigureAwait(false),
         };
     }
 }
