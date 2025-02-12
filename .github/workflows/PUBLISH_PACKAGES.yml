@@ -29,4 +29,4 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
       - name: Publish DTSV.Net
-        run: dotnet nuget push artifacts\*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.PUBLISH_TO_NUGET_ORG}} --skip-duplicate
+        run: dotnet nuget push artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.PUBLISH_TO_NUGET_ORG}} --skip-duplicate
