@@ -8,7 +8,7 @@ on:
 
 jobs:
   build_test_dstv_net:
-    runs-on: ubuntu-latest
+    runs-on: baseflow-runner
     steps:
       - uses: actions/checkout@v4
       - name: Setup .NET
