@@ -8,7 +8,7 @@ on:
 
 jobs:
   build_test_dstv_net:
-    runs-on: baseflow-runner
+    runs-on: ubuntu-latest
     steps:
       - name: Set up JDK 17
         uses: actions/setup-java@v4
