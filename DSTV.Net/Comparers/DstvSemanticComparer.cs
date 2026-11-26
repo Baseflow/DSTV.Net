@@ -68,7 +68,7 @@ public sealed class DstvSemanticComparer : IEqualityComparer<IDstv>
     }
 
     private static string[] ElementSignatures(IDstv model) =>
-        model.Elements.Select(ElementSignature).Order(StringComparer.Ordinal).ToArray();
+        [.. model.Elements.Select(ElementSignature).Order(StringComparer.Ordinal)];
 
     private static string ElementSignature(DstvElement element) =>
         element switch
@@ -98,7 +98,7 @@ public sealed class DstvSemanticComparer : IEqualityComparer<IDstv>
 
     private static string ContourSignature(Contour contour)
     {
-        var points = contour.Points.ToArray();
+        DstvContourPoint[] points = [.. contour.Points];
         if (points.Length == 0) return $"contour|{Format(contour.Type)}|open|";
 
         var closed = string.Equals(PointSignature(points[0]), PointSignature(points[^1]),
@@ -120,11 +120,12 @@ public sealed class DstvSemanticComparer : IEqualityComparer<IDstv>
     }
 
     private static string[] PointSignatures(IEnumerable<DstvContourPoint> points) =>
-        points.Select(PointSignature).ToArray();
+        [.. points.Select(PointSignature)];
 
     private static string PointSignature(DstvContourPoint point)
     {
-        var signature = new StringBuilder()
+        StringBuilder signature = new();
+        signature
             .Append(Format(point.FlCode)).Append('|')
             .Append(Format(point.XCoord)).Append('|')
             .Append(Format(point.YCoord)).Append('|')
@@ -161,8 +162,8 @@ public sealed class DstvSemanticComparer : IEqualityComparer<IDstv>
         return minimum;
     }
 
-    private static string Format<T>(T value) where T : struct =>
-        ((IFormattable)value).ToString(null, CultureInfo.InvariantCulture) ?? string.Empty;
+    private static string Format<T>(T value) where T : struct, IFormattable =>
+        value.ToString(null, CultureInfo.InvariantCulture) ?? string.Empty;
 
     private static string Escape(string? value) =>
         value is null ? "<null>" : Convert.ToBase64String(Encoding.UTF8.GetBytes(value));

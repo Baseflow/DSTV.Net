@@ -20,7 +20,7 @@ public record Contour : DstvElement
     [JsonConstructor]
     private Contour(IEnumerable<DstvContourPoint> points, ContourType type)
     {
-        _pointList = points.ToList();
+        _pointList = [.. points];
         Type = type;
     }
 
@@ -38,6 +38,8 @@ public record Contour : DstvElement
         if (pointList is null) throw new ArgumentNullException(nameof(pointList));
 #endif
 
+        NormalizePointFaces(pointList);
+
         List<Contour> outList = [];
         if (type is ContourType.AK or ContourType.IK or ContourType.PU or ContourType.KO)
         {
@@ -49,19 +51,6 @@ public record Contour : DstvElement
         var firstIndex = 0;
         for (var i = 1; i < pointList.Count; i++)
         {
-            if (pointList[i].FlCode == FaceCode.None)
-            {
-                if (i == 0)
-                    throw new DstvParseException("First point of AK/IK block haven\'t flange mark, processing aborted");
-
-                if (i == firstIndex)
-                {
-                    DstvLog.LogMissingFaceCode(logger);
-                }
-
-                pointList[i].FlCode = pointList[i - 1].FlCode;
-            }
-
             if (IsLegacyContourBoundary(pointList[i], first))
             {
                 var lastIndex = i;
@@ -78,6 +67,22 @@ public record Contour : DstvElement
         }
 
         return outList;
+    }
+
+    private static void NormalizePointFaces(List<DstvContourPoint> points)
+    {
+        if (points.Count == 0) return;
+        if (points[0].FlCode == FaceCode.None)
+            throw new DstvParseException("First point of contour block has no face mark, processing aborted");
+
+        var faceCode = points[0].FlCode;
+        for (var index = 1; index < points.Count; index++)
+        {
+            if (points[index].FlCode == FaceCode.None)
+                points[index].FlCode = faceCode;
+            else
+                faceCode = points[index].FlCode;
+        }
     }
 
     private static bool IsLegacyContourBoundary(DstvContourPoint point, DstvContourPoint first)

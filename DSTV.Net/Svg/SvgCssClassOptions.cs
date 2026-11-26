@@ -5,17 +5,15 @@ namespace DSTV.Net.Svg;
 /// </summary>
 public sealed class SvgCssClassOptions
 {
-    private string _className;
-
     internal SvgCssClassOptions(string className, string style)
     {
-        _className = className;
+        ClassName = className;
         Style = style;
     }
 
     public string ClassName
     {
-        get => _className;
+        get => field;
         set
         {
             if (string.IsNullOrWhiteSpace(value)
@@ -28,7 +26,7 @@ public sealed class SvgCssClassOptions
                     nameof(value));
             }
 
-            _className = value;
+            field = value;
         }
     }
 

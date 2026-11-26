@@ -14,6 +14,8 @@ internal static class BodyReader
     /// <param name="items">An enumerable of strings that will be iterated.</param>
     /// <param name="contourType">The type of contour to handle with.</param>
     /// <param name="action">The action to call for each non-skipped item.</param>
+    /// <param name="logger">The logger for recoverable parse failures.</param>
+    /// <param name="cancellationToken">A token that can cancel processing.</param>
     private static void SkipSelfAndExecute(this IEnumerable<string> items, ContourType contourType,
         Action<string> action, ILogger logger, CancellationToken cancellationToken)
     {
@@ -37,10 +39,10 @@ internal static class BodyReader
         ILogger logger, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var outputList = new List<DstvElement>();
+        List<DstvElement> outputList = [];
         var elemMap = await GetElementMapAsync(readerContext, logger, cancellationToken).ConfigureAwait(false);
         // holes & slots
-        (elemMap.GetValueOrDefault(ContourType.BO) ?? new List<List<string>>())
+        (elemMap.GetValueOrDefault(ContourType.BO) ?? [])
             .SelectMany(holeList => holeList)
             .SkipSelfAndExecute(ContourType.BO, holeNote => outputList.Add(DstvHole.CreateHole(holeNote)),
                 logger, cancellationToken);
@@ -58,17 +60,17 @@ internal static class BodyReader
         var punchPointNotes = elemMap.GetValueOrDefault(ContourType.KO);
         AddContoursByType(outputList, punchPointNotes, ContourType.KO, logger, cancellationToken);
         // numeration
-        (elemMap.GetValueOrDefault(ContourType.SI)?? new List<List<string>>())
+        (elemMap.GetValueOrDefault(ContourType.SI) ?? [])
             .SelectMany(numNote => numNote)
             .SkipSelfAndExecute(ContourType.SI, numNote => outputList.Add(DstvNumeration.CreateNumeration(numNote)),
                 logger, cancellationToken);
         // bends
-        (elemMap.GetValueOrDefault(ContourType.KA) ?? new List<List<string>>())
+        (elemMap.GetValueOrDefault(ContourType.KA) ?? [])
             .SelectMany(bendNote => bendNote)
             .SkipSelfAndExecute(ContourType.KA, bendNote => outputList.Add(DstvBend.CreateBend(bendNote)),
                 logger, cancellationToken);
         // cuts
-        (elemMap.GetValueOrDefault(ContourType.SC) ?? new List<List<string>>())
+        (elemMap.GetValueOrDefault(ContourType.SC) ?? [])
             .SelectMany(cutNote => cutNote)
             .SkipSelfAndExecute(ContourType.SC, cutNote => outputList.Add(DstvCut.CreateCut(cutNote)),
                 logger, cancellationToken);
@@ -84,7 +86,7 @@ internal static class BodyReader
         foreach (var noteList in notesBlockList)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            List<DstvContourPoint> localList = new();
+            List<DstvContourPoint> localList = [];
             foreach (var pointNote in noteList)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -113,7 +115,7 @@ internal static class BodyReader
     private static async Task<Dictionary<ContourType, List<List<string>>?>> GetElementMapAsync(
         ReaderContext context, ILogger logger, CancellationToken cancellationToken)
     {
-        Dictionary<ContourType, List<List<string>>?> elemMap = new();
+        Dictionary<ContourType, List<List<string>>?> elemMap = [];
         var curKey = ContourType.None;
         while (true)
         {
@@ -135,9 +137,9 @@ internal static class BodyReader
 #endif
                 if (!CheckIfMark(line)) DstvLog.LogUnknownBlockCode(logger, line);
 
-                if (!elemMap.ContainsKey(curKey)) elemMap.Add(curKey, new List<List<string>>());
+                if (!elemMap.ContainsKey(curKey)) elemMap.Add(curKey, []);
 
-                elemMap.GetValueOrDefault(curKey)?.Add(new List<string>());
+                elemMap.GetValueOrDefault(curKey)?.Add([]);
             }
 
             if (curKey is ContourType.None) continue;
@@ -159,8 +161,6 @@ internal static class BodyReader
 
     public static string[] RemoveVoids(IEnumerable<string> toBeRefined)
     {
-        var tempList = new List<string>(toBeRefined);
-        tempList.RemoveAll(string.IsNullOrEmpty);
-        return tempList.ToArray();
+        return [.. toBeRefined.Where(static item => !string.IsNullOrEmpty(item))];
     }
 }

@@ -94,6 +94,7 @@ internal sealed class HeaderReader
     ///     Reads two spaces. Throws an error if other things are read.
     /// </summary>
     /// <param name="context">The context, containing the source TextReader and lineNumber information</param>
+    /// <param name="cancellationToken">A token that can cancel reading.</param>
     /// <exception cref="UnexpectedEndException">Is thrown whenever the end of the data is unexpectedly encountered</exception>
     /// <exception cref="UnexpectedCharacterException">Is throw whenever an unexpected character is encountered</exception>
     private static async Task Parse2XAsync(ReaderContext context, CancellationToken cancellationToken)

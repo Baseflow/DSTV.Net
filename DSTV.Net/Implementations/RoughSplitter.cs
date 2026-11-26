@@ -5,7 +5,7 @@ namespace DSTV.Net.Implementations;
 
 internal class RoughSplitter : ISplitter
 {
-    internal static Lazy<RoughSplitter> Instance = new(() => new RoughSplitter());
+    internal static Lazy<RoughSplitter> Instance = new(static () => new());
 
     /// <summary>
     ///     Splitter for rough splitting - delete letter-sequence lexemes between two digits (without additional spaces)
@@ -13,6 +13,6 @@ internal class RoughSplitter : ISplitter
     public string[] Split(string input)
     {
         var match = Regex.Match(input, @"(?<!\s|\D)[a-z]+(?!\s+|\D)|\s+", RegexOptions.None, TimeSpan.FromSeconds(1));
-        return match.Success ? match.Value.Split(new [] { match.Value }, StringSplitOptions.None) : new[] { input };
+        return match.Success ? match.Value.Split([match.Value], StringSplitOptions.None) : [input];
     }
 }

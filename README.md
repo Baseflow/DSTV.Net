@@ -4,6 +4,32 @@
 [![NuGet version (DSTV.Net)](https://img.shields.io/nuget/v/DSTV.Net.svg?style=flat-square)](https://www.nuget.org/packages/DSTV.Net/)
 
 DSTV.Net is an open-source library tailored for .NET platforms, providing a powerful utility for interacting with DSTV (also known as NC1 or Tekla) files. These files serve as a key industry standard in the steel industry, defining geometry and project information for steel plates.
+
+## Changelog
+
+### 2.0.0
+
+- Added .NET 10 support and retained .NET 8 LTS support.
+- Fixed omitted first `AK` sections when optional header text records are absent.
+- Preserved contour weld-preparation angle/blunting values and explicit face codes.
+- Added cancellation token overloads throughout parsing.
+- Replaced console output with optional `ILogger<DstvReader>` support and a `NullLogger` default.
+- Added part feature detection, `PartFeatures`, and order-independent semantic comparison.
+- Added JSON round-trip support for parsed models.
+- Added face-filtered, configurable SVG export for all supported blocks.
+- Added broad public-format fixtures and coverage for AK/IK/PU/KO/SI/BO/SC/KA records.
+
+## Breaking changes
+
+Version 2.0.0 contains several intentional API changes:
+
+- Supported target frameworks are now `.NET 8` and `.NET 10`; `.NET 6`, `.NET 7`, `.NET 9`, and `netstandard2.0` are no longer targeted.
+- `FlCode` is now the `FaceCode` enum rather than a string.
+- `Contour.Type` moved to the common `DstvElement` base for top-level parsed elements.
+- `DstvContourPoint` is no longer a `DstvElement`.
+- `ToSvg()` was removed from `IDstv` and the model. Use `DstvSvgExporter.Export(...)` or `ExportDocument(...)`.
+- Feature detection now distinguishes saw cuts from AK/IK regular contour cuts.
+
 Introduction
 
 DSTV.Net is a precision-oriented, high-performance library designed to simplify the process of working with DSTV files. It equips developers and software applications with the ability to read and interpret DSTV file content effortlessly, making it ideal for CAD, CAM, CNC, and other software applications associated with steel fabrication and structural engineering.
@@ -94,7 +120,7 @@ In addition to parsing, DSTV.Net also facilitates the visualization of the geome
 ![image](./.img/dstv2.svg)
 
 
-We support this by providing a SVG generator that can be used to generate SVG files from the parsed DSTV data.
+We support this by providing an SVG exporter for one selected profile face. Raw SVG elements and complete SVG documents are available.
 
 SVG's are lightweight and can be used in a variety of applications, including web applications, and are scalable to any size without losing quality.
 
@@ -115,5 +141,18 @@ var svgDocument = exporter.ExportDocument(parsedDstv, FaceCode.V);
 // Save a complete SVG file including its doctype.
 await File.WriteAllTextAsync("/tmp/dstv.svg", svgDocument).ConfigureAwait(false);
 ```
+
+See `SvgCssClass` and the exporter's indexer to customize both each generated class name and its raw CSS declarations:
+
+```C#
+var exporter = new DstvSvgExporter();
+exporter[SvgCssClass.Hole].ClassName = "borehole";
+exporter[SvgCssClass.Hole].Style = "fill:none;stroke:darkred;stroke-width:1";
+exporter[SvgCssClass.InnerContour].Style = ""; // Keep the class in graphics, but omit its style rule.
+```
+
+## AI assistance disclaimer
+
+Artificial-intelligence tools may be used to assist with implementation, testing, documentation, and code review in this repository. Maintainers remain responsible for evaluating and accepting generated changes. AI-assisted output does not replace validation against the DSTV specification, real NC1 exports, or the target machine's postprocessor and production requirements.
 
 Feedback is highly appreciated. Thank you for choosing DSTV.Net - happy coding!

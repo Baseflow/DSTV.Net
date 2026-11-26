@@ -14,6 +14,7 @@ internal static class TextReaderExtensions
     /// </summary>
     /// <param name="reader">An instance of a <see cref="TextReader" /> containing the DSTV source data</param>
     /// <param name="context">The active reader context</param>
+    /// <param name="cancellationToken">A token that can cancel reading</param>
     /// <returns>The string instance of the read freeText or an exception if there is too much characters read</returns>
     /// <exception cref="FreeTextTooLargeException"></exception>
     internal static async Task<string> ParseFreeText(this TextReader reader, ReaderContext context,
@@ -58,6 +59,7 @@ internal static class TextReaderExtensions
     /// </summary>
     /// <param name="reader">An instance of a <see cref="TextReader" /> containing the DSTV source data</param>
     /// <param name="context">The active reader context</param>
+    /// <param name="cancellationToken">A token that can cancel reading</param>
     /// <returns>The double read or an exception</returns>
     /// <exception cref="DoubleParseException"></exception>
     internal static async Task<double> ParseDouble(this TextReader reader, ReaderContext context,
@@ -77,6 +79,7 @@ internal static class TextReaderExtensions
     /// </summary>
     /// <param name="reader">An instance of a <see cref="TextReader" /> containing the DSTV source data</param>
     /// <param name="context">The active reader context</param>
+    /// <param name="cancellationToken">A token that can cancel reading</param>
     /// <returns></returns>
     /// <exception cref="TupleParseException{TDouble}"></exception>
     /// <exception cref="DoubleParseException"></exception>
@@ -106,6 +109,7 @@ internal static class TextReaderExtensions
     /// </summary>
     /// <param name="reader">An instance of a <see cref="TextReader" /> containing the DSTV source data</param>
     /// <param name="context">The active reader context</param>
+    /// <param name="cancellationToken">A token that can cancel reading</param>
     /// <returns>The integer read or an exception</returns>
     /// <exception cref="IntegerParseException"></exception>
     internal static async Task<int> ParseInteger(this TextReader reader, ReaderContext context,
@@ -125,6 +129,7 @@ internal static class TextReaderExtensions
     /// <typeparam name="TEnum">The type of the Enum which needs to be parsed</typeparam>
     /// <param name="reader">An instance of a <see cref="TextReader" /> containing the DSTV source data</param>
     /// <param name="context">The active reader context</param>
+    /// <param name="cancellationToken">A token that can cancel reading</param>
     /// <returns>The integer read or an exception</returns>
     /// <exception cref="EnumParseException{TEnum}"></exception>
     internal static async Task<TEnum> ParseEnum<TEnum>(this TextReader reader, ReaderContext context,

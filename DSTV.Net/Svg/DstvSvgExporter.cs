@@ -2,6 +2,7 @@ using DSTV.Net.Contracts;
 using DSTV.Net.Data;
 using DSTV.Net.Enums;
 using System.Globalization;
+using System.Text;
 
 namespace DSTV.Net.Svg;
 
@@ -62,9 +63,18 @@ public sealed class DstvSvgExporter
     public string ExportDocument(IDstv model, FaceCode faceCode) =>
         $"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">{Environment.NewLine}{Export(model, faceCode)}";
 
-    internal string Classes(params SvgCssClass[] cssClasses) =>
-        string.Join(' ', cssClasses.Select(cssClass => this[cssClass].ClassName));
+    internal string Classes(params ReadOnlySpan<SvgCssClass> cssClasses)
+    {
+        var result = new StringBuilder();
+        foreach (var cssClass in cssClasses)
+        {
+            if (result.Length != 0) result.Append(' ');
+            result.Append(this[cssClass].ClassName);
+        }
+
+        return result.ToString();
+    }
 
     private string Styles() =>
-        $"<style>{string.Concat(_classNames.Values.Where(options => !string.IsNullOrWhiteSpace(options.Style)).Select(options => $".{options.ClassName}{{{options.Style}}}"))}</style>";
+        $"<style>{string.Concat(_classNames.Values.Where(static options => !string.IsNullOrWhiteSpace(options.Style)).Select(static options => $".{options.ClassName}{{{options.Style}}}"))}</style>";
 }

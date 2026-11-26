@@ -124,6 +124,8 @@ public class Tests
         Assert.Equal(76, numerations[0].LetterHeight);
         Assert.Equal("pl", numerations[1].Text);
         Assert.Equal(FaceCode.V, numerations[1].FlCode);
+        Assert.All(elements.OfType<Contour>().SelectMany(contour => contour.Points),
+            point => Assert.NotEqual(FaceCode.None, point.FlCode));
         Assert.All(elements.OfType<Contour>(), contour =>
             Assert.Contains(contour.Type, new[] { ContourType.AK, ContourType.IK, ContourType.PU, ContourType.KO }));
     }

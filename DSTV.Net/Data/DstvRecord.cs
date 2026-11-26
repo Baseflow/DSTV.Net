@@ -9,7 +9,7 @@ public record DstvRecord : IDstv
     /// <summary>
     ///     All the elements in the structure.
     /// </summary>
-    public IEnumerable<DstvElement> Elements { get; init; } = new List<DstvElement>();
+    public IEnumerable<DstvElement> Elements { get; init; } = [];
 
     /// <summary>
     ///     All the (basic) header information.
