@@ -6,22 +6,27 @@ namespace DSTV.Net.Data;
 
 public record DstvCut : DstvElement
 {
-    private readonly double _normVecX;
-    private readonly double _normVecY;
-    private readonly double _normVecZ;
-    private readonly double _spPointX;
-    private readonly double _spPointY;
-    private readonly double _spPointZ;
+    public double OriginX { get; }
+
+    public double OriginY { get; }
+
+    public double OriginZ { get; }
+
+    public double NormalX { get; }
+
+    public double NormalY { get; }
+
+    public double NormalZ { get; }
 
     private DstvCut(double spPointX, double spPointY, double spPointZ, double normVecX, double normVecY, double normVecZ)
     {
         Type = ContourType.SC;
-        _spPointX = spPointX;
-        _spPointY = spPointY;
-        _spPointZ = spPointZ;
-        _normVecX = normVecX;
-        _normVecY = normVecY;
-        _normVecZ = normVecZ;
+        OriginX = spPointX;
+        OriginY = spPointY;
+        OriginZ = spPointZ;
+        NormalX = normVecX;
+        NormalY = normVecY;
+        NormalZ = normVecZ;
     }
 
     public static DstvCut CreateCut(string dataLine)
@@ -42,5 +47,5 @@ public record DstvCut : DstvElement
     }
 
     public override string ToString() =>
-        $"DstvCut: spPointX={_spPointX}, spPointY={_spPointY}, spPointZ={_spPointZ}, normVecX={_normVecX}, normVecY={_normVecY}, normVecZ={_normVecZ}";
+        $"DstvCut: spPointX={OriginX}, spPointY={OriginY}, spPointZ={OriginZ}, normVecX={NormalX}, normVecY={NormalY}, normVecZ={NormalZ}";
 }

@@ -36,7 +36,7 @@ public record Contour : DstvElement
 #endif
 
         List<Contour> outList = [];
-        if (type is ContourType.AK or ContourType.IK)
+        if (type is ContourType.AK or ContourType.IK or ContourType.PU or ContourType.KO)
         {
             outList.Add(new Contour(pointList, type));
             return outList;
