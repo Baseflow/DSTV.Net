@@ -12,6 +12,7 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
+      <PackageReference Include="System.Text.Json" Version="8.0.6" />
 
       <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <_Parameter1>DSTV.Net.Test, PublicKey=002400000480000094000000060200000024000052534131000400000100010035c3104ed27a08fe4fb033c8dd8cf77c58fa65c3a1e3b2385c50c51838301801374f13ba8a6b4b5b88e8835b627fa4d4357c4f801f4d6417f7882758fc4baa44b9a07a06087c2562f0edfdc6e9c597c47aaaa981d8df0443cc24edc7b3573d0953b7ed9822012e8e70f8ffd4d1b853bbe0640362c34bb2a3b0e70bc16d956dca</_Parameter1>

@@ -2,6 +2,7 @@ using DSTV.Net.Exceptions;
 using DSTV.Net.Enums;
 using DSTV.Net.Implementations;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace DSTV.Net.Data;
 
@@ -16,12 +17,13 @@ public record DstvHole : LocatedElement
     /// </summary>
     public double Diameter { get; }
 
-    protected DstvHole(FaceCode flCode, double xCoord, double yCoord, double diam, double depth)
-        : base(flCode, xCoord, yCoord)
+    [JsonConstructor]
+    protected DstvHole(FaceCode FlCode, double XCoord, double YCoord, double Diameter, double Depth)
+        : base(FlCode, XCoord, YCoord)
     {
         Type = ContourType.BO;
-        Diameter = diam;
-        Depth = depth;
+        this.Diameter = Diameter;
+        this.Depth = Depth;
     }
 
 

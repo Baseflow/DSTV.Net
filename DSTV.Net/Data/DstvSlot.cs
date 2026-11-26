@@ -12,19 +12,19 @@ public record DstvSlot : DstvHole
     public double SlotWidth { get; }
 
     public DstvSlot(
-        FaceCode flCode,
-        double xCoord, 
-        double yCoord, 
-        double diam, 
-        double depth, 
-        double slotLen,
-        double slotWidth, 
-        double slotAng) 
-        : base(flCode, xCoord, yCoord, diam, depth)
+        FaceCode FlCode,
+        double XCoord,
+        double YCoord,
+        double Diameter,
+        double Depth,
+        double SlotLength,
+        double SlotWidth,
+        double SlotAngle)
+        : base(FlCode, XCoord, YCoord, Diameter, Depth)
     {
-        SlotLength = slotLen;
-        SlotWidth = slotWidth;
-        SlotAngle = slotAng;
+        this.SlotLength = SlotLength;
+        this.SlotWidth = SlotWidth;
+        this.SlotAngle = SlotAngle;
     }
 
     public override string ToString() => $"{base.ToString()}, SlotLength : {SlotLength}, SlothWidth : {SlotWidth}, SlotAngle : {SlotAngle}";

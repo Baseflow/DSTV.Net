@@ -31,5 +31,7 @@ public record DstvRecord : IDstv
     /// <summary>
     ///     All the (basic) header information.
     /// </summary>
-    public IDstvHeader? Header { get; init; }
+    public DstvHeader? Header { get; init; }
+
+    IDstvHeader? IDstv.Header => Header;
 }

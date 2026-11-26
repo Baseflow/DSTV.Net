@@ -5,6 +5,8 @@ using DSTV.Net.Extensions;
 using System.Globalization;
 using DSTV.Net.Data;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Xunit;
 
 namespace DSTV.Net.Test;
@@ -584,6 +586,28 @@ public class Tests
         Assert.True(model.HasSkewedRegularCuts());
         Assert.True(model.HasCurvedRegularCuts());
         Assert.True(model.HasInternalContours());
+    }
+
+    [Fact]
+    public async Task TestJsonRoundTripPreservesPartAndFeatures()
+    {
+        using var streamReader = new StreamReader($"{DataPath}/Data/blocks.nc");
+        var model = await new DstvReader().ParseAsync(streamReader);
+        var expectedFeatures = model.GetPartFeatures();
+        var options = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Converters = { new JsonStringEnumConverter() },
+        };
+
+        var json = JsonSerializer.Serialize<DstvRecord>((DstvRecord)model, options);
+        var deserialized = JsonSerializer.Deserialize<DstvRecord>(json, options);
+
+        Assert.NotNull(deserialized);
+        Assert.Equal(expectedFeatures, deserialized.GetPartFeatures());
+        Assert.Equal(model.Header?.PieceIdentification, deserialized.Header?.PieceIdentification);
+        Assert.Equal(model.Elements.Count(), deserialized.Elements.Count());
+        Assert.Equal(model.ToSvg(), deserialized.ToSvg());
     }
 
     private sealed class CancelOnReadTextReader(string content, CancellationTokenSource cancellationSource)

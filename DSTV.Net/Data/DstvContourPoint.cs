@@ -3,10 +3,13 @@ using DSTV.Net.Enums;
 using DSTV.Net.Implementations;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
+using System.Text.Json.Serialization;
 
 namespace DSTV.Net.Data;
 
 [SuppressMessage("Designer", "CA1051:Do not declare visible instance fields", Justification = "This is a DTO")]
+[JsonPolymorphic]
+[JsonDerivedType(typeof(DstvSkewedPoint), "skewed")]
 public record DstvContourPoint(FaceCode FlCode, double XCoord, double YCoord, bool IsNotch, double Radius)
 {
     public FaceCode FlCode { get; set; } = FlCode;

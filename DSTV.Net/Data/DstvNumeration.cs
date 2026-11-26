@@ -1,6 +1,7 @@
 using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
+using System.Text.Json.Serialization;
 
 namespace DSTV.Net.Data;
 
@@ -12,14 +13,15 @@ public record DstvNumeration : LocatedElement
 
     public string Text { get; }
 
-    private DstvNumeration(FaceCode flCode, double xCoord, double yCoord, double angle, double letterHeight,
-        string text) :
-        base(flCode, xCoord, yCoord)
+    [JsonConstructor]
+    private DstvNumeration(FaceCode FlCode, double XCoord, double YCoord, double Angle, double LetterHeight,
+        string Text) :
+        base(FlCode, XCoord, YCoord)
     {
         Type = ContourType.SI;
-        Angle = angle;
-        LetterHeight = letterHeight;
-        Text = text;
+        this.Angle = Angle;
+        this.LetterHeight = LetterHeight;
+        this.Text = Text;
     }
 
 

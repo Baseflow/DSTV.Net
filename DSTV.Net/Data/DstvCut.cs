@@ -1,6 +1,7 @@
 using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
+using System.Text.Json.Serialization;
 
 namespace DSTV.Net.Data;
 
@@ -18,15 +19,16 @@ public record DstvCut : DstvElement
 
     public double NormalZ { get; }
 
-    private DstvCut(double spPointX, double spPointY, double spPointZ, double normVecX, double normVecY, double normVecZ)
+    [JsonConstructor]
+    private DstvCut(double OriginX, double OriginY, double OriginZ, double NormalX, double NormalY, double NormalZ)
     {
         Type = ContourType.SC;
-        OriginX = spPointX;
-        OriginY = spPointY;
-        OriginZ = spPointZ;
-        NormalX = normVecX;
-        NormalY = normVecY;
-        NormalZ = normVecZ;
+        this.OriginX = OriginX;
+        this.OriginY = OriginY;
+        this.OriginZ = OriginZ;
+        this.NormalX = NormalX;
+        this.NormalY = NormalY;
+        this.NormalZ = NormalZ;
     }
 
     public static DstvCut CreateCut(string dataLine)

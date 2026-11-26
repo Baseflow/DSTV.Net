@@ -3,9 +3,17 @@ using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
 using System.Text.RegularExpressions;
+using System.Text.Json.Serialization;
 
 namespace DSTV.Net.Data;
 
+[JsonPolymorphic]
+[JsonDerivedType(typeof(Contour), "contour")]
+[JsonDerivedType(typeof(DstvHole), "hole")]
+[JsonDerivedType(typeof(DstvSlot), "slot")]
+[JsonDerivedType(typeof(DstvNumeration), "numeration")]
+[JsonDerivedType(typeof(DstvBend), "bend")]
+[JsonDerivedType(typeof(DstvCut), "cut")]
 public record DstvElement
 {
     /// <summary>
