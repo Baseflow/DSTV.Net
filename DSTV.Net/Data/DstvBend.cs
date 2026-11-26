@@ -1,30 +1,36 @@
+using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
+using System.Text.Json.Serialization;
+using DSTV.Net.Svg;
 
 namespace DSTV.Net.Data;
 
 public record DstvBend : DstvElement
 {
-    private readonly double _bendingAngle;
+    public double OriginX { get; }
 
-    private readonly double _bendingRadius;
+    public double OriginY { get; }
 
-    private readonly double _finishX;
+    public double FinishX { get; }
 
-    private readonly double _finishY;
-    private readonly double _originX;
+    public double FinishY { get; }
 
-    private readonly double _originY;
+    public double BendingAngle { get; }
 
-    private DstvBend(double originX, double originY, double finishX, double finishY, double bendingAngle,
-        double bendingRadius)
+    public double BendingRadius { get; }
+
+    [JsonConstructor]
+    private DstvBend(double OriginX, double OriginY, double FinishX, double FinishY, double BendingAngle,
+        double BendingRadius)
     {
-        _originX = originX;
-        _originY = originY;
-        _finishX = finishX;
-        _finishY = finishY;
-        _bendingAngle = bendingAngle;
-        _bendingRadius = bendingRadius;
+        Type = ContourType.KA;
+        this.OriginX = OriginX;
+        this.OriginY = OriginY;
+        this.FinishX = FinishX;
+        this.FinishY = FinishY;
+        this.BendingAngle = BendingAngle;
+        this.BendingRadius = BendingRadius;
     }
 
     public static DstvBend CreateBend(string bendDataLine)
@@ -44,5 +50,10 @@ public record DstvBend : DstvElement
 
 
     public override string ToString() =>
-        $"DstvBend{{originX={_originX}, originY={_originY}, finishX={_finishX} , finishY={_finishY}, bendingAngle={_bendingAngle}, bendingRadius={_bendingRadius}'}}";
+        $"DstvBend{{originX={OriginX}, originY={OriginY}, finishX={FinishX} , finishY={FinishY}, bendingAngle={BendingAngle}, bendingRadius={BendingRadius}'}}";
+
+    internal override string ToSvg(FaceCode faceCode, DstvSvgExporter exporter) =>
+        faceCode == FaceCode.V
+            ? $"<line class=\"{exporter.Classes(SvgCssClass.Bend, SvgCssClass.Outline)}\" x1=\"{OriginX:F}\" y1=\"{OriginY:F}\" x2=\"{FinishX:F}\" y2=\"{FinishY:F}\" data-angle=\"{BendingAngle:F}\" data-radius=\"{BendingRadius:F}\" />"
+            : string.Empty;
 }

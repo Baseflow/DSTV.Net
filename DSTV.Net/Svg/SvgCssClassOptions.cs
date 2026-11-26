@@ -1,0 +1,37 @@
+namespace DSTV.Net.Svg;
+
+/// <summary>
+/// Defines the class name and raw CSS declarations used for one SVG feature.
+/// </summary>
+public sealed class SvgCssClassOptions
+{
+    internal SvgCssClassOptions(string className, string style)
+    {
+        ClassName = className;
+        Style = style;
+    }
+
+    public string ClassName
+    {
+        get => field;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value)
+                || !char.IsLetter(value[0]) && value[0] != '_'
+                || value.Any(character =>
+                    !char.IsLetterOrDigit(character) && character is not '-' and not '_'))
+            {
+                throw new ArgumentException(
+                    "A CSS class name must start with a letter or underscore and contain only letters, digits, hyphens, or underscores.",
+                    nameof(value));
+            }
+
+            field = value;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets raw CSS declarations. Empty text omits this class from the style element.
+    /// </summary>
+    public string Style { get; set; }
+}

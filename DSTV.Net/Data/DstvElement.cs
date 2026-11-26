@@ -1,13 +1,28 @@
 using DSTV.Net.Contracts;
+using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
 using System.Text.RegularExpressions;
+using System.Text.Json.Serialization;
+using DSTV.Net.Svg;
 
 namespace DSTV.Net.Data;
 
+[JsonPolymorphic]
+[JsonDerivedType(typeof(Contour), "contour")]
+[JsonDerivedType(typeof(DstvHole), "hole")]
+[JsonDerivedType(typeof(DstvSlot), "slot")]
+[JsonDerivedType(typeof(DstvNumeration), "numeration")]
+[JsonDerivedType(typeof(DstvBend), "bend")]
+[JsonDerivedType(typeof(DstvCut), "cut")]
 public record DstvElement
 {
-    protected static string[] GetDataVector(string dstvElementLine, ISplitter splitter)
+    /// <summary>
+    /// Gets the DSTV section type that contains the element.
+    /// </summary>
+    public ContourType Type { get; protected init; }
+
+    internal static string[] GetDataVector(string dstvElementLine, ISplitter splitter)
     {
 #if NET
         ArgumentNullException.ThrowIfNull(splitter);
@@ -24,9 +39,29 @@ public record DstvElement
         return splitter.Split(dstvElementLine);
     }
 
-    protected static bool ValidateFlange(string flDependMark) => Regex.IsMatch(flDependMark, "[ovuh]", RegexOptions.None, TimeSpan.FromSeconds(1));
+    internal static bool TryParseFaceCode(string value, out FaceCode faceCode)
+    {
+#if NET
+        ArgumentNullException.ThrowIfNull(value);
+#else
+        if (value is null) throw new ArgumentNullException(nameof(value));
+#endif
+        faceCode = FaceCode.None;
+        if (value.Length != 1) return false;
 
-    protected static string[] CorrectSplits(string[] separated, bool skipFirst = false, bool skipLast = false)
+        faceCode = char.ToUpperInvariant(value[0]) switch
+        {
+            'V' => FaceCode.V,
+            'O' => FaceCode.O,
+            'U' => FaceCode.U,
+            'H' => FaceCode.H,
+            _ => FaceCode.None,
+        };
+
+        return faceCode != FaceCode.None;
+    }
+
+    internal static string[] CorrectSplits(string[] separated, bool skipFirst = false, bool skipLast = false)
     {
 #if NET
         ArgumentNullException.ThrowIfNull(separated);
@@ -42,5 +77,5 @@ public record DstvElement
         return BodyReader.RemoveVoids(separated);
     }
 
-    public virtual string ToSvg() => string.Empty;
+    internal virtual string ToSvg(FaceCode faceCode, DstvSvgExporter exporter) => string.Empty;
 }
