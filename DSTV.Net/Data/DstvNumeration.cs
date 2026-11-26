@@ -1,3 +1,4 @@
+using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
 
@@ -9,10 +10,11 @@ public record DstvNumeration : LocatedElement
     private readonly double _letterHeight;
     private readonly string _text;
 
-    private DstvNumeration(string flCode, double xCoord, double yCoord, double angle, double letterHeight,
+    private DstvNumeration(FaceCode flCode, double xCoord, double yCoord, double angle, double letterHeight,
         string text) :
         base(flCode, xCoord, yCoord)
     {
+        Type = ContourType.SI;
         _angle = angle;
         _letterHeight = letterHeight;
         _text = text;
@@ -22,9 +24,8 @@ public record DstvNumeration : LocatedElement
     public static DstvNumeration CreateNumeration(string dstvLine)
     {
         var separated = GetDataVector(dstvLine, FineSplitter.Instance);
-        // temporary flange-code in case of missing a signature in line
-        var flCode = "x";
-        if (ValidateFlange(separated[1])) flCode = separated[1];
+        var flCode = FaceCode.None;
+        if (TryParseFaceCode(separated[1], out var parsedFlCode)) flCode = parsedFlCode;
 
         separated = CorrectSplits(separated, skipLast: true);
 

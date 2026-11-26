@@ -8,19 +8,9 @@ namespace DSTV.Net.Data;
 [SuppressMessage("Design", "CA1303:Do not pass literals as localized parameters", Justification = "Will fix later")]
 public record Contour : DstvElement
 {
-    /// <summary>
-    /// Gets the list of contour points that define the shape of the contour.
-    /// </summary>
-    public IReadOnlyList<DstvContourPoint> PointList => _pointList;
-
     private readonly List<DstvContourPoint> _pointList;
 
-    /// <summary>
-    /// Gets the <see cref="ContourType"/> of the contour.
-    /// </summary>
-    public ContourType Type { get; }
-
-    public IEnumerable<DstvContourPoint> Points => _pointList.AsEnumerable();
+    public IEnumerable<DstvContourPoint> Points => _pointList;
 
     private Contour(List<DstvContourPoint> pointList, ContourType type)
     {
@@ -49,7 +39,7 @@ public record Contour : DstvElement
         var firstIndex = 0;
         for (var i = 1; i < pointList.Count; i++)
         {
-            if (pointList[i].FlCode.Equals("x", StringComparison.OrdinalIgnoreCase))
+            if (pointList[i].FlCode == FaceCode.None)
             {
                 if (i == 0)
                     throw new DstvParseException("First point of AK/IK block haven\'t flange mark, processing aborted");
@@ -63,7 +53,7 @@ public record Contour : DstvElement
                 pointList[i].FlCode = pointList[i - 1].FlCode;
             }
 
-            if (pointList[i].Equals(first))
+            if (IsLegacyContourBoundary(pointList[i], first))
             {
                 var lastIndex = i;
                 outList.Add(new Contour(pointList.GetRange(firstIndex, lastIndex + 1 - firstIndex), type));
@@ -81,11 +71,19 @@ public record Contour : DstvElement
         return outList;
     }
 
+    private static bool IsLegacyContourBoundary(DstvContourPoint point, DstvContourPoint first)
+    {
+        if (Math.Abs(point.YCoord - first.XCoord) <= 0) return false;
+        if (Math.Abs(point.YCoord - first.YCoord) <= 0) return false;
+
+        return point.FlCode == first.FlCode;
+    }
+
     public override string ToSvg()
     {
         var sb = new StringBuilder();
         var sbLine = new StringBuilder();
-        var previous = new DstvContourPoint("x", 0, 0, IsNotch: false, 0);
+        var previous = new DstvContourPoint(FaceCode.None, 0, 0, IsNotch: false, 0);
         foreach (var point in _pointList)
         {
             if (_pointList.IndexOf(point) == 0)

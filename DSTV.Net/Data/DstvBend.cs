@@ -1,3 +1,4 @@
+using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
 
@@ -19,6 +20,7 @@ public record DstvBend : DstvElement
     private DstvBend(double originX, double originY, double finishX, double finishY, double bendingAngle,
         double bendingRadius)
     {
+        Type = ContourType.KA;
         _originX = originX;
         _originY = originY;
         _finishX = finishX;

@@ -1,3 +1,5 @@
+using DSTV.Net.Enums;
+
 namespace DSTV.Net.Data;
 
 public record DstvSlot : DstvHole
@@ -10,7 +12,7 @@ public record DstvSlot : DstvHole
     public double SlotWidth { get; }
 
     public DstvSlot(
-        string flCode, 
+        FaceCode flCode,
         double xCoord, 
         double yCoord, 
         double diam, 

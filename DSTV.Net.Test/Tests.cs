@@ -108,6 +108,11 @@ public class Tests
         Assert.True(elements[6] is Contour);
         Assert.True(elements[7] is DstvNumeration);
         Assert.True(elements[8] is DstvNumeration);
+        Assert.All(elements.OfType<DstvHole>(), hole => Assert.Equal(ContourType.BO, hole.Type));
+        Assert.All(elements.OfType<DstvNumeration>(), numeration =>
+            Assert.Equal(ContourType.SI, numeration.Type));
+        Assert.All(elements.OfType<Contour>(), contour =>
+            Assert.Contains(contour.Type, new[] { ContourType.AK, ContourType.IK, ContourType.PU, ContourType.KO }));
     }
 
     /// <summary>
@@ -332,6 +337,33 @@ public class Tests
     }
 
     [Fact]
+    public void TestContourPointPreservesWeldPreparation()
+    {
+        var point = DstvContourPoint.CreatePoint(
+            "  o      15.15s      0.00       0.00       7.24       0.00       0.00       0.00");
+        var skewedPoint = Assert.IsType<DstvSkewedPoint>(DstvContourPoint.CreatePoint(
+            "  o      48.95      76.95       0.00      10.26     -38.00       0.00       0.00"));
+
+        var firstPoint = Assert.IsType<DstvSkewedPoint>(point);
+        Assert.Equal(7.24, firstPoint.FirstAngle);
+        Assert.Equal(0, firstPoint.FirstBlunting);
+        Assert.Equal(10.26, skewedPoint.FirstAngle);
+        Assert.Equal(-38.00, skewedPoint.FirstBlunting);
+    }
+
+    [Theory]
+    [InlineData("v", FaceCode.V)]
+    [InlineData("o", FaceCode.O)]
+    [InlineData("u", FaceCode.U)]
+    [InlineData("h", FaceCode.H)]
+    public void TestFaceCodesAreParsed(string sourceCode, FaceCode expected)
+    {
+        var point = DstvContourPoint.CreatePoint($"  {sourceCode} 10.00 20.00 0.00");
+
+        Assert.Equal(expected, point.FlCode);
+    }
+
+    [Fact]
     public async Task TestMissingOptionalHeaderTextPreservesFirstVContour()
     {
         const string data = """
@@ -374,9 +406,9 @@ public class Tests
         var contours = result.Elements.OfType<Contour>().ToArray();
 
         Assert.Equal(2, contours.Length);
-        Assert.Equal("v", contours[0].Points.First().FlCode);
+        Assert.Equal(FaceCode.V, contours[0].Points.First().FlCode);
         Assert.Equal(34.70, contours[0].Points.First().XCoord);
-        Assert.Equal("o", contours[1].Points.First().FlCode);
+        Assert.Equal(FaceCode.O, contours[1].Points.First().FlCode);
     }
 
     [Fact]

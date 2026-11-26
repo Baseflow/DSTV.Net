@@ -1,3 +1,4 @@
+using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
 
@@ -14,6 +15,7 @@ public record DstvCut : DstvElement
 
     private DstvCut(double spPointX, double spPointY, double spPointZ, double normVecX, double normVecY, double normVecZ)
     {
+        Type = ContourType.SC;
         _spPointX = spPointX;
         _spPointY = spPointY;
         _spPointZ = spPointZ;
