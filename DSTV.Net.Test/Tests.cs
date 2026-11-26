@@ -2,6 +2,7 @@ using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
 using DSTV.Net.Extensions;
+using DSTV.Net.Comparers;
 using System.Globalization;
 using DSTV.Net.Data;
 using Microsoft.Extensions.Logging;
@@ -608,6 +609,40 @@ public class Tests
         Assert.Equal(model.Header?.PieceIdentification, deserialized.Header?.PieceIdentification);
         Assert.Equal(model.Elements.Count(), deserialized.Elements.Count());
         Assert.Equal(model.ToSvg(), deserialized.ToSvg());
+    }
+
+    [Fact]
+    public async Task TestSemanticComparerIgnoresBlockAndContourOrder()
+    {
+        using var streamReader = new StreamReader($"{DataPath}/Data/blocks.nc");
+        var model = Assert.IsType<DstvRecord>(await new DstvReader().ParseAsync(streamReader));
+        var header = Assert.IsType<DstvHeader>(model.Header);
+        var reorderedElements = model.Elements
+            .Select(element => element is Contour contour
+                ? Contour.CreateSeveralContours(contour.Points.Reverse().ToList(), contour.Type).Single()
+                : element)
+            .Reverse()
+            .ToArray();
+        var reordered = new DstvRecord { Header = header, Elements = reorderedElements };
+
+        Assert.True(DstvSemanticComparer.Instance.Equals(model, reordered));
+        Assert.Equal(
+            DstvSemanticComparer.Instance.GetHashCode(model),
+            DstvSemanticComparer.Instance.GetHashCode(reordered));
+
+        var changed = new DstvRecord
+        {
+            Header = header with { PieceIdentification = "different" },
+            Elements = reorderedElements,
+        };
+        Assert.False(DstvSemanticComparer.Instance.Equals(model, changed));
+
+        var missingElement = new DstvRecord
+        {
+            Header = header,
+            Elements = reorderedElements.Skip(1),
+        };
+        Assert.False(DstvSemanticComparer.Instance.Equals(model, missingElement));
     }
 
     private sealed class CancelOnReadTextReader(string content, CancellationTokenSource cancellationSource)
