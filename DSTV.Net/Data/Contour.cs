@@ -1,5 +1,8 @@
 using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
+using DSTV.Net.Implementations;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
@@ -21,6 +24,10 @@ public record Contour : DstvElement
     [SuppressMessage("Design", "CA1002:Do not expose generic lists", Justification = "This is a record")]
     [SuppressMessage("Design", "MA0016:Prefer returning collection abstraction instead of implementation", Justification = "This is a record")]
     public static IEnumerable<Contour> CreateSeveralContours(List<DstvContourPoint> pointList, ContourType type)
+        => CreateSeveralContours(pointList, type, NullLogger.Instance);
+
+    internal static IEnumerable<Contour> CreateSeveralContours(List<DstvContourPoint> pointList,
+        ContourType type, ILogger logger)
     {
 #if NET
         ArgumentNullException.ThrowIfNull(pointList);
@@ -46,8 +53,7 @@ public record Contour : DstvElement
 
                 if (i == firstIndex)
                 {
-                    Console.WriteLine(
-                        "Warning: first point of contour haven\'t flange mark, mark will be taken from previous contour in section");
+                    DstvLog.LogMissingFaceCode(logger);
                 }
 
                 pointList[i].FlCode = pointList[i - 1].FlCode;
@@ -65,7 +71,7 @@ public record Contour : DstvElement
             }
 
             if (i == pointList.Count - 1)
-                Console.WriteLine("Warning: there are non-closed part of points in end of contour section");
+                DstvLog.LogUnclosedContour(logger);
         }
 
         return outList;

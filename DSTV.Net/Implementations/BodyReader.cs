@@ -1,6 +1,7 @@
 using DSTV.Net.Data;
 using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
+using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
 
 namespace DSTV.Net.Implementations;
@@ -14,7 +15,7 @@ internal static class BodyReader
     /// <param name="contourType">The type of contour to handle with.</param>
     /// <param name="action">The action to call for each non-skipped item.</param>
     private static void SkipSelfAndExecute(this IEnumerable<string> items, ContourType contourType,
-        Action<string> action, CancellationToken cancellationToken)
+        Action<string> action, ILogger logger, CancellationToken cancellationToken)
     {
         foreach (var item in items)
         {
@@ -26,57 +27,57 @@ internal static class BodyReader
             }
             catch (DstvParseException dStVParseException)
             {
-                Console.WriteLine(dStVParseException);
+                DstvLog.LogParseElementFailed(logger, item, dStVParseException);
             }
         }
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "Should be cleaned up later")]
     public static async Task<IEnumerable<DstvElement>> GetElementsAsync(ReaderContext readerContext,
-        CancellationToken cancellationToken)
+        ILogger logger, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var outputList = new List<DstvElement>();
-        var elemMap = await GetElementMapAsync(readerContext, cancellationToken).ConfigureAwait(false);
+        var elemMap = await GetElementMapAsync(readerContext, logger, cancellationToken).ConfigureAwait(false);
         // holes & slots
         (elemMap.GetValueOrDefault(ContourType.BO) ?? new List<List<string>>())
             .SelectMany(holeList => holeList)
             .SkipSelfAndExecute(ContourType.BO, holeNote => outputList.Add(DstvHole.CreateHole(holeNote)),
-                cancellationToken);
+                logger, cancellationToken);
 
         // outer contours
         var outerBorders = elemMap.GetValueOrDefault(ContourType.AK);
-        AddContoursByType(outputList, outerBorders, ContourType.AK, cancellationToken);
+        AddContoursByType(outputList, outerBorders, ContourType.AK, logger, cancellationToken);
         // inner contours
         var innerBorders = elemMap.GetValueOrDefault(ContourType.IK);
-        AddContoursByType(outputList, innerBorders, ContourType.IK, cancellationToken);
+        AddContoursByType(outputList, innerBorders, ContourType.IK, logger, cancellationToken);
         // powder contours
         var powderPointNotes = elemMap.GetValueOrDefault(ContourType.PU);
-        AddContoursByType(outputList, powderPointNotes, ContourType.PU, cancellationToken);
+        AddContoursByType(outputList, powderPointNotes, ContourType.PU, logger, cancellationToken);
         // punch contours
         var punchPointNotes = elemMap.GetValueOrDefault(ContourType.KO);
-        AddContoursByType(outputList, punchPointNotes, ContourType.KO, cancellationToken);
+        AddContoursByType(outputList, punchPointNotes, ContourType.KO, logger, cancellationToken);
         // numeration
         (elemMap.GetValueOrDefault(ContourType.SI)?? new List<List<string>>())
             .SelectMany(numNote => numNote)
             .SkipSelfAndExecute(ContourType.SI, numNote => outputList.Add(DstvNumeration.CreateNumeration(numNote)),
-                cancellationToken);
+                logger, cancellationToken);
         // bends
         (elemMap.GetValueOrDefault(ContourType.KA) ?? new List<List<string>>())
             .SelectMany(bendNote => bendNote)
             .SkipSelfAndExecute(ContourType.KA, bendNote => outputList.Add(DstvBend.CreateBend(bendNote)),
-                cancellationToken);
+                logger, cancellationToken);
         // cuts
         (elemMap.GetValueOrDefault(ContourType.SC) ?? new List<List<string>>())
             .SelectMany(cutNote => cutNote)
             .SkipSelfAndExecute(ContourType.SC, cutNote => outputList.Add(DstvCut.CreateCut(cutNote)),
-                cancellationToken);
+                logger, cancellationToken);
        
         return outputList;
     }
 
     private static void AddContoursByType(List<DstvElement> outElemList, List<List<string>>? notesBlockList,
-        ContourType type, CancellationToken cancellationToken)
+        ContourType type, ILogger logger, CancellationToken cancellationToken)
     {
         if (notesBlockList is null) return;
 
@@ -94,23 +95,23 @@ internal static class BodyReader
                 }
                 catch (DstvParseException dStVParseException)
                 {
-                    Console.WriteLine(dStVParseException);
+                    DstvLog.LogParseElementFailed(logger, pointNote, dStVParseException);
                 }
             }
 
             try
             {
-                outElemList.AddRange(Contour.CreateSeveralContours(localList, type));
+                outElemList.AddRange(Contour.CreateSeveralContours(localList, type, logger));
             }
             catch (DstvParseException dStVParseException)
             {
-                Console.WriteLine(dStVParseException);
+                DstvLog.LogCreateElementFailed(logger, noteList, dStVParseException);
             }
         }
     }
 
     private static async Task<Dictionary<ContourType, List<List<string>>?>> GetElementMapAsync(
-        ReaderContext context, CancellationToken cancellationToken)
+        ReaderContext context, ILogger logger, CancellationToken cancellationToken)
     {
         Dictionary<ContourType, List<List<string>>?> elemMap = new();
         var curKey = ContourType.None;
@@ -132,7 +133,7 @@ internal static class BodyReader
 #else
                 curKey = (ContourType)Enum.Parse(typeof(ContourType), line);
 #endif
-                if (!CheckIfMark(line)) Console.WriteLine(line + "Warning: unregistered DStV code-line detected: ");
+                if (!CheckIfMark(line)) DstvLog.LogUnknownBlockCode(logger, line);
 
                 if (!elemMap.ContainsKey(curKey)) elemMap.Add(curKey, new List<List<string>>());
 

@@ -1,11 +1,30 @@
 ﻿using DSTV.Net.Contracts;
 using DSTV.Net.Data;
 using DSTV.Net.Exceptions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace DSTV.Net.Implementations;
 
 public sealed class DstvReader : IDstvReader
 {
+    private readonly ILogger<DstvReader> _logger;
+
+    public DstvReader()
+        : this(NullLogger<DstvReader>.Instance)
+    {
+    }
+
+    public DstvReader(ILogger<DstvReader> logger)
+    {
+#if NET
+        ArgumentNullException.ThrowIfNull(logger);
+#else
+        if (logger is null) throw new ArgumentNullException(nameof(logger));
+#endif
+        _logger = logger;
+    }
+
     public Task<IDstv> ParseAsync(string dstvData) => ParseAsync(dstvData, CancellationToken.None);
 
     public async Task<IDstv> ParseAsync(string dstvData, CancellationToken cancellationToken)
@@ -38,7 +57,7 @@ public sealed class DstvReader : IDstvReader
         return new DstvRecord
         {
             Header = await HeaderReader.ParseAsync(context, cancellationToken).ConfigureAwait(false),
-            Elements = await BodyReader.GetElementsAsync(context, cancellationToken).ConfigureAwait(false),
+            Elements = await BodyReader.GetElementsAsync(context, _logger, cancellationToken).ConfigureAwait(false),
         };
     }
 }

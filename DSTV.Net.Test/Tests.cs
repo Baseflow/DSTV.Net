@@ -3,6 +3,7 @@ using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
 using System.Globalization;
 using DSTV.Net.Data;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace DSTV.Net.Test;
@@ -424,6 +425,25 @@ public class Tests
         Assert.True(streamReader.ReceivedCancellationToken);
     }
 
+    [Fact]
+    public async Task TestParserReportsWarningsThroughInjectedLogger()
+    {
+        var data = await File.ReadAllTextAsync($"{DataPath}/Data/P1.nc");
+        data = data.Replace(
+            "  o      674.41s    38.10      20.64     0.00",
+            "  o      674.41s",
+            StringComparison.Ordinal);
+        var logger = new CollectingLogger<DstvReader>();
+        var dstvReader = new DstvReader(logger);
+
+        await dstvReader.ParseAsync(data);
+
+        var warning = Assert.Single(logger.Entries,
+            entry => entry.Level == LogLevel.Warning && entry.EventId.Id == 1);
+        Assert.Equal(1, warning.EventId.Id);
+        Assert.Contains("674.41s", warning.Message, StringComparison.Ordinal);
+    }
+
     private sealed class CancelOnReadTextReader(string content, CancellationTokenSource cancellationSource)
         : TextReader
     {
@@ -443,6 +463,21 @@ public class Tests
         {
             if (disposing) _reader.Dispose();
             base.Dispose(disposing);
+        }
+    }
+
+    private sealed class CollectingLogger<T> : ILogger<T>
+    {
+        public List<(LogLevel Level, EventId EventId, string Message)> Entries { get; } = [];
+
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception,
+            Func<TState, Exception?, string> formatter)
+        {
+            Entries.Add((logLevel, eventId, formatter(state, exception)));
         }
     }
 
