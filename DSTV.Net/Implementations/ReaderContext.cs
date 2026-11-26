@@ -9,6 +9,7 @@ public sealed class ReaderContext
     ///     The LineNumber the parser is currently reading
     /// </summary>
     private int _lineNumber;
+    private string? _bufferedLine;
 
     internal ReaderContext(TextReader source)
     {
@@ -25,6 +26,19 @@ public sealed class ReaderContext
     ///     The underlying TextReader for reading the data structure
     /// </summary>
     internal TextReader Source { get; init; }
+
+    internal bool HasBufferedLine => _bufferedLine is not null;
+
+    internal void BufferLine(string line) => _bufferedLine = line;
+
+    internal async Task<string?> ReadLineAsync()
+    {
+        if (_bufferedLine is null) return await Source.ReadLineAsync().ConfigureAwait(false);
+
+        var line = _bufferedLine;
+        _bufferedLine = null;
+        return line;
+    }
 
     /// <summary>
     ///     Increments the <see cref="LineNumber" />

@@ -107,7 +107,7 @@ internal static class BodyReader
         var curKey = ContourType.None;
         while (true)
         {
-            var line = await reader.ReadLineAsync().ConfigureAwait(false);
+            var line = await context.ReadLineAsync().ConfigureAwait(false);
             // if has END-mark.
             //  Maybe to be refactored for multi-peace file processing
             if (line?.Equals(Constants.EndOfFile, StringComparison.Ordinal) != false ||
@@ -116,7 +116,7 @@ internal static class BodyReader
             // if has quote-mark
             if (Regex.IsMatch(line, "^\\*\\*.*", RegexOptions.None, TimeSpan.FromSeconds(1))) continue;
 
-            if (CheckCodeLine(line))
+            if (IsCodeLine(line))
             {
 #if NET
                 curKey = (ContourType)Enum.Parse<ContourType>(line);
@@ -144,7 +144,8 @@ internal static class BodyReader
         Regex.IsMatch(str,
             "^BO$|^SI$|^AK$|^IK$|^PU$|^KO$|^SC$|^UE$|^KA$|^EN$|^ST$|^E[0-9]$|^B[0-9]$|^S[0-9]$|^A[0-9]$|^I[0-9]$|^P[0-9]$|^K[0-9]$", RegexOptions.None, TimeSpan.FromSeconds(1));
 
-    private static bool CheckCodeLine(string str) => Regex.IsMatch(str, "^[A-Z0-9]{2}$", RegexOptions.None, TimeSpan.FromSeconds(1));
+    internal static bool IsCodeLine(string? str) => str is not null
+        && Regex.IsMatch(str, "^[A-Z0-9]{2}$", RegexOptions.None, TimeSpan.FromSeconds(1));
 
     public static string[] RemoveVoids(IEnumerable<string> toBeRefined)
     {

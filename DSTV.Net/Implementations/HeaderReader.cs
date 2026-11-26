@@ -79,13 +79,13 @@ internal sealed class HeaderReader
         await Parse2XAsync(context).ConfigureAwait(false);
         result.FlangeEndCut = await reader.ParseDouble(context).ConfigureAwait(false);
         // //2x, a Text info on piece
-        result.Text1InfoOnPiece = await reader.ParseFreeText(context).ConfigureAwait(false);
+        result.Text1InfoOnPiece = await reader.ParseOptionalFreeText(context).ConfigureAwait(false);
         // //2x, a Text info on piece
-        result.Text2InfoOnPiece = await reader.ParseFreeText(context).ConfigureAwait(false);
+        result.Text2InfoOnPiece = await reader.ParseOptionalFreeText(context).ConfigureAwait(false);
         //2x, a Text info on piece
-        result.Text3InfoOnPiece = await reader.ParseFreeText(context).ConfigureAwait(false);
+        result.Text3InfoOnPiece = await reader.ParseOptionalFreeText(context).ConfigureAwait(false);
         //2x, a Text info on piece
-        result.Text4InfoOnPiece = await reader.ParseFreeText(context).ConfigureAwait(false);
+        result.Text4InfoOnPiece = await reader.ParseOptionalFreeText(context).ConfigureAwait(false);
 
         return result;
     }

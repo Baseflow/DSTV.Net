@@ -331,6 +331,54 @@ public class Tests
         Assert.False(actualPoints[4].IsNotch);
     }
 
+    [Fact]
+    public async Task TestMissingOptionalHeaderTextPreservesFirstVContour()
+    {
+        const string data = """
+                            ST
+                            ** profile
+                              order
+                              drawing
+                              phase
+                              piece
+                              steel
+                              1
+                              profile
+                              I
+                                 370.57
+                                 200.00
+                                 200.00
+                                  15.00
+                                   9.00
+                                  18.00
+                                 61.300
+                                  1.150
+                                  0.000
+                                  0.000
+                                  0.000
+                                  0.000
+
+
+
+                            AK
+                              v      34.70s      0.00       0.00       0.00       0.00       0.00       0.00
+                                    370.57       0.00       0.00       0.00       0.00       0.00       0.00
+                            AK
+                              o      15.15s      0.00       0.00       0.00       0.00       0.00       0.00
+                                    370.57       0.00       0.00       0.00       0.00       0.00       0.00
+                            EN
+                            """;
+        var dstvReader = new DstvReader();
+
+        var result = await dstvReader.ParseAsync(data);
+        var contours = result.Elements.OfType<Contour>().ToArray();
+
+        Assert.Equal(2, contours.Length);
+        Assert.Equal("v", contours[0].Points.First().FlCode);
+        Assert.Equal(34.70, contours[0].Points.First().XCoord);
+        Assert.Equal("o", contours[1].Points.First().FlCode);
+    }
+
     // /// <summary>
     // ///     Example of an invalid end in the DSTV file
     // ///     Expect a <seealso cref="UnexpectedEndException" />

@@ -30,6 +30,27 @@ internal static class TextReaderExtensions
     }
 
     /// <summary>
+    ///     Parses an optional freeText header field without consuming a following body section marker.
+    /// </summary>
+    internal static async Task<string> ParseOptionalFreeText(this TextReader reader, ReaderContext context)
+    {
+        if (context.HasBufferedLine) return string.Empty;
+
+        var line = await reader.ReadLineAsync().ConfigureAwait(false);
+        if (line is not null && BodyReader.IsCodeLine(line))
+        {
+            context.BufferLine(line);
+            return string.Empty;
+        }
+
+        var result = line?.Trim();
+        if (result?.Length > Constants.FreeTextMaximumSize) throw new FreeTextTooLargeException(context);
+
+        context.IncrementLineNumber();
+        return result ?? string.Empty;
+    }
+
+    /// <summary>
     ///     Parses a <see cref="double" />.
     /// </summary>
     /// <param name="reader">An instance of a <see cref="TextReader" /> containing the DSTV source data</param>

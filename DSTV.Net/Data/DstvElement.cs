@@ -24,7 +24,8 @@ public record DstvElement
         return splitter.Split(dstvElementLine);
     }
 
-    protected static bool ValidateFlange(string flDependMark) => Regex.IsMatch(flDependMark, "[ovuh]", RegexOptions.None, TimeSpan.FromSeconds(1));
+    protected static bool ValidateFlange(string flDependMark) =>
+        Regex.IsMatch(flDependMark, "^[ovuh]$", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
     protected static string[] CorrectSplits(string[] separated, bool skipFirst = false, bool skipLast = false)
     {
