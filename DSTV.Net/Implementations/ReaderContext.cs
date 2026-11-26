@@ -1,3 +1,5 @@
+using DSTV.Net.Extensions;
+
 namespace DSTV.Net.Implementations;
 
 /// <summary>
@@ -31,9 +33,11 @@ public sealed class ReaderContext
 
     internal void BufferLine(string line) => _bufferedLine = line;
 
-    internal async Task<string?> ReadLineAsync()
+    internal async Task<string?> ReadLineAsync(CancellationToken cancellationToken)
     {
-        if (_bufferedLine is null) return await Source.ReadLineAsync().ConfigureAwait(false);
+        cancellationToken.ThrowIfCancellationRequested();
+        if (_bufferedLine is null)
+            return await Source.ReadLineWithCancellationAsync(cancellationToken).ConfigureAwait(false);
 
         var line = _bufferedLine;
         _bufferedLine = null;

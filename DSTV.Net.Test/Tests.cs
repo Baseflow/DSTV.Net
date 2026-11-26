@@ -379,6 +379,41 @@ public class Tests
         Assert.Equal("o", contours[1].Points.First().FlCode);
     }
 
+    [Fact]
+    public async Task TestCancellationTokenReachesTextReader()
+    {
+        using var cancellationSource = new CancellationTokenSource();
+        using var streamReader = new CancelOnReadTextReader("ST", cancellationSource);
+        var dstvReader = new DstvReader();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(
+            () => dstvReader.ParseAsync(streamReader, cancellationSource.Token));
+
+        Assert.True(streamReader.ReceivedCancellationToken);
+    }
+
+    private sealed class CancelOnReadTextReader(string content, CancellationTokenSource cancellationSource)
+        : TextReader
+    {
+        private readonly StringReader _reader = new(content);
+
+        public bool ReceivedCancellationToken { get; private set; }
+
+        public override async ValueTask<string?> ReadLineAsync(CancellationToken cancellationToken)
+        {
+            ReceivedCancellationToken = cancellationToken.CanBeCanceled
+                                       && cancellationToken == cancellationSource.Token;
+            await cancellationSource.CancelAsync().ConfigureAwait(false);
+            return await _reader.ReadLineAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) _reader.Dispose();
+            base.Dispose(disposing);
+        }
+    }
+
     // /// <summary>
     // ///     Example of an invalid end in the DSTV file
     // ///     Expect a <seealso cref="UnexpectedEndException" />

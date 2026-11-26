@@ -13,10 +13,12 @@ internal static class BodyReader
     /// <param name="items">An enumerable of strings that will be iterated.</param>
     /// <param name="contourType">The type of contour to handle with.</param>
     /// <param name="action">The action to call for each non-skipped item.</param>
-    private static void SkipSelfAndExecute(this IEnumerable<string> items, ContourType contourType, Action<string> action)
+    private static void SkipSelfAndExecute(this IEnumerable<string> items, ContourType contourType,
+        Action<string> action, CancellationToken cancellationToken)
     {
         foreach (var item in items)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             try
             {
                 if (item.Equals(contourType.ToString(), StringComparison.Ordinal)) continue;
@@ -30,53 +32,61 @@ internal static class BodyReader
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "Should be cleaned up later")]
-    public static async Task<IEnumerable<DstvElement>> GetElementsAsync(ReaderContext readerContext)
+    public static async Task<IEnumerable<DstvElement>> GetElementsAsync(ReaderContext readerContext,
+        CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         var outputList = new List<DstvElement>();
-        var elemMap = await GetElementMapAsync(readerContext).ConfigureAwait(false);
+        var elemMap = await GetElementMapAsync(readerContext, cancellationToken).ConfigureAwait(false);
         // holes & slots
         (elemMap.GetValueOrDefault(ContourType.BO) ?? new List<List<string>>())
             .SelectMany(holeList => holeList)
-            .SkipSelfAndExecute(ContourType.BO, (holeNote) => outputList.Add(DstvHole.CreateHole(holeNote)));
+            .SkipSelfAndExecute(ContourType.BO, holeNote => outputList.Add(DstvHole.CreateHole(holeNote)),
+                cancellationToken);
 
         // outer contours
         var outerBorders = elemMap.GetValueOrDefault(ContourType.AK);
-        AddContoursByType(outputList, outerBorders, ContourType.AK);
+        AddContoursByType(outputList, outerBorders, ContourType.AK, cancellationToken);
         // inner contours
         var innerBorders = elemMap.GetValueOrDefault(ContourType.IK);
-        AddContoursByType(outputList, innerBorders, ContourType.IK);
+        AddContoursByType(outputList, innerBorders, ContourType.IK, cancellationToken);
         // powder contours
         var powderPointNotes = elemMap.GetValueOrDefault(ContourType.PU);
-        AddContoursByType(outputList, powderPointNotes, ContourType.PU);
+        AddContoursByType(outputList, powderPointNotes, ContourType.PU, cancellationToken);
         // punch contours
         var punchPointNotes = elemMap.GetValueOrDefault(ContourType.KO);
-        AddContoursByType(outputList, punchPointNotes, ContourType.KO);
+        AddContoursByType(outputList, punchPointNotes, ContourType.KO, cancellationToken);
         // numeration
         (elemMap.GetValueOrDefault(ContourType.SI)?? new List<List<string>>())
             .SelectMany(numNote => numNote)
-            .SkipSelfAndExecute(ContourType.SI, (numNote) => outputList.Add(DstvNumeration.CreateNumeration(numNote)));
+            .SkipSelfAndExecute(ContourType.SI, numNote => outputList.Add(DstvNumeration.CreateNumeration(numNote)),
+                cancellationToken);
         // bends
         (elemMap.GetValueOrDefault(ContourType.KA) ?? new List<List<string>>())
             .SelectMany(bendNote => bendNote)
-            .SkipSelfAndExecute(ContourType.KA, (bendNote) => outputList.Add(DstvBend.CreateBend(bendNote)));
+            .SkipSelfAndExecute(ContourType.KA, bendNote => outputList.Add(DstvBend.CreateBend(bendNote)),
+                cancellationToken);
         // cuts
         (elemMap.GetValueOrDefault(ContourType.SC) ?? new List<List<string>>())
             .SelectMany(cutNote => cutNote)
-            .SkipSelfAndExecute(ContourType.SC, (cutNote) => outputList.Add(DstvCut.CreateCut(cutNote)));
+            .SkipSelfAndExecute(ContourType.SC, cutNote => outputList.Add(DstvCut.CreateCut(cutNote)),
+                cancellationToken);
        
         return outputList;
     }
 
     private static void AddContoursByType(List<DstvElement> outElemList, List<List<string>>? notesBlockList,
-        ContourType type)
+        ContourType type, CancellationToken cancellationToken)
     {
         if (notesBlockList is null) return;
 
         foreach (var noteList in notesBlockList)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             List<DstvContourPoint> localList = new();
             foreach (var pointNote in noteList)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 try
                 {
                     if (pointNote.Equals(type.ToString(), StringComparison.Ordinal)) continue;
@@ -99,15 +109,14 @@ internal static class BodyReader
         }
     }
 
-    private static async Task<Dictionary<ContourType, List<List<string>>?>> GetElementMapAsync(ReaderContext context)
+    private static async Task<Dictionary<ContourType, List<List<string>>?>> GetElementMapAsync(
+        ReaderContext context, CancellationToken cancellationToken)
     {
-        var reader = context.Source;
-
         Dictionary<ContourType, List<List<string>>?> elemMap = new();
         var curKey = ContourType.None;
         while (true)
         {
-            var line = await context.ReadLineAsync().ConfigureAwait(false);
+            var line = await context.ReadLineAsync(cancellationToken).ConfigureAwait(false);
             // if has END-mark.
             //  Maybe to be refactored for multi-peace file processing
             if (line?.Equals(Constants.EndOfFile, StringComparison.Ordinal) != false ||

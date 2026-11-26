@@ -33,8 +33,9 @@ DSTV.Net offers robust parsing capabilities, adept at extracting header informat
 using var streamReader = new StreamReader("[filename]");
 // Create a new dstv reader
 var dstvReader = new DstvReader();
-// Parse the dstv file.
-var parsedDstv = await dstvReader.ParseAsync(streamReader))
+// Parse the dstv file with an optional cancellation token.
+using var cancellationSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+var parsedDstv = await dstvReader.ParseAsync(streamReader, cancellationSource.Token);
 // Access the header information
 var dstvHeader = parsedDstv.Header;
 // Print the order identification
