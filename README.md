@@ -106,10 +106,14 @@ using var streamReader = new StreamReader("[filename]");
 var dstvReader = new DstvReader();
 // Parse the dstv file.
 var parsedDstv = await dstvReader.ParseAsync(streamReader));
-// Generate the SVG content
-var svg = parsedDstv.ToSvg();
-// Save the svg to a file
-await File.WriteAllTextAsync("/tmp/dstv.svg",  @"<!DOCTYPE svg PUBLIC ""-//W3C//DTD SVG 1.1//EN"" ""http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"">" + Environment.NewLine + svg).ConfigureAwait(false);
+// Generate SVG for one profile face.
+var exporter = new DstvSvgExporter();
+exporter[SvgCssClass.Contour].ClassName = "part-outline";
+exporter[SvgCssClass.Contour].Style = "fill:none;stroke:navy;stroke-width:1";
+var svgElement = exporter.Export(parsedDstv, FaceCode.V);
+var svgDocument = exporter.ExportDocument(parsedDstv, FaceCode.V);
+// Save a complete SVG file including its doctype.
+await File.WriteAllTextAsync("/tmp/dstv.svg", svgDocument).ConfigureAwait(false);
 ```
 
 Feedback is highly appreciated. Thank you for choosing DSTV.Net - happy coding!

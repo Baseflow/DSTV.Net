@@ -2,6 +2,7 @@ using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
 using System.Text.Json.Serialization;
+using DSTV.Net.Svg;
 
 namespace DSTV.Net.Data;
 
@@ -50,4 +51,9 @@ public record DstvBend : DstvElement
 
     public override string ToString() =>
         $"DstvBend{{originX={OriginX}, originY={OriginY}, finishX={FinishX} , finishY={FinishY}, bendingAngle={BendingAngle}, bendingRadius={BendingRadius}'}}";
+
+    internal override string ToSvg(FaceCode faceCode, DstvSvgExporter exporter) =>
+        faceCode == FaceCode.V
+            ? $"<line class=\"{exporter.Classes(SvgCssClass.Bend, SvgCssClass.Outline)}\" x1=\"{OriginX:F}\" y1=\"{OriginY:F}\" x2=\"{FinishX:F}\" y2=\"{FinishY:F}\" data-angle=\"{BendingAngle:F}\" data-radius=\"{BendingRadius:F}\" />"
+            : string.Empty;
 }

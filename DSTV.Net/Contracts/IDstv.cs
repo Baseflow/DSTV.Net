@@ -17,9 +17,4 @@ public interface IDstv
     /// </summary>
     IEnumerable<DstvElement> Elements { get; }
 
-    /// <summary>
-    ///     Renders the DSTV structure to svg markup.
-    /// </summary>
-    /// <returns></returns>
-    string ToSvg();
 }

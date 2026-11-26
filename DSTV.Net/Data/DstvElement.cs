@@ -4,6 +4,7 @@ using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
 using System.Text.RegularExpressions;
 using System.Text.Json.Serialization;
+using DSTV.Net.Svg;
 
 namespace DSTV.Net.Data;
 
@@ -76,5 +77,5 @@ public record DstvElement
         return BodyReader.RemoveVoids(separated);
     }
 
-    public virtual string ToSvg() => string.Empty;
+    internal virtual string ToSvg(FaceCode faceCode, DstvSvgExporter exporter) => string.Empty;
 }

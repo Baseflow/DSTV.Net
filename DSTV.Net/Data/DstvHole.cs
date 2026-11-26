@@ -3,6 +3,7 @@ using DSTV.Net.Enums;
 using DSTV.Net.Implementations;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
+using DSTV.Net.Svg;
 
 namespace DSTV.Net.Data;
 
@@ -61,6 +62,8 @@ public record DstvHole : LocatedElement
     public override string ToString() =>
         $"DStVHole : faceCode={FlCode}, xCoord={XCoord}, yCoord={YCoord}, diam={Diameter}, depth={Depth}";
 
-    public override string ToSvg() =>
-        $"<circle cx=\"{XCoord:F}\" cy=\"{YCoord:F}\" r=\"{Diameter / 2:F}\" fill=\"white\" />";
+    internal override string ToSvg(FaceCode faceCode, DstvSvgExporter exporter) =>
+        IsOnFace(faceCode)
+            ? $"<circle class=\"{exporter.Classes(SvgCssClass.Hole, SvgCssClass.Outline)}\" cx=\"{XCoord:F}\" cy=\"{YCoord:F}\" r=\"{Diameter / 2:F}\" />"
+            : string.Empty;
 }

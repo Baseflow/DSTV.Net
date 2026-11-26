@@ -2,6 +2,8 @@ using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
 using System.Text.Json.Serialization;
+using System.Net;
+using DSTV.Net.Svg;
 
 namespace DSTV.Net.Data;
 
@@ -49,4 +51,9 @@ public record DstvNumeration : LocatedElement
 
     public override string ToString() =>
         $"Numeration: FlCode={FlCode}, XCoord={XCoord}, YCoord={YCoord}, Angle={Angle}, LetterHeight {LetterHeight}, Text : {Text}";
+
+    internal override string ToSvg(FaceCode faceCode, DstvSvgExporter exporter) =>
+        IsOnFace(faceCode)
+            ? $"<text class=\"{exporter.Classes(SvgCssClass.Text)}\" x=\"{XCoord:F}\" y=\"{YCoord:F}\" font-size=\"{LetterHeight:F}\" transform=\"rotate({-Angle:F} {XCoord:F} {YCoord:F})\">{WebUtility.HtmlEncode(Text)}</text>"
+            : string.Empty;
 }

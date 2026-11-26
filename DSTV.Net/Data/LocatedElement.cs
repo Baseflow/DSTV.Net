@@ -8,6 +8,8 @@ public abstract record LocatedElement(FaceCode FlCode, double XCoord, double YCo
 {
     public FaceCode FlCode { get; set; } = FlCode;
 
+    protected bool IsOnFace(FaceCode faceCode) => FlCode == faceCode;
+
     public virtual bool Equals(LocatedElement? other)
     {
         if (other is null) return false;

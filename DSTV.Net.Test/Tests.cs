@@ -3,6 +3,7 @@ using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
 using DSTV.Net.Extensions;
 using DSTV.Net.Comparers;
+using DSTV.Net.Svg;
 using System.Globalization;
 using DSTV.Net.Data;
 using Microsoft.Extensions.Logging;
@@ -608,7 +609,8 @@ public class Tests
         Assert.Equal(expectedFeatures, deserialized.GetPartFeatures());
         Assert.Equal(model.Header?.PieceIdentification, deserialized.Header?.PieceIdentification);
         Assert.Equal(model.Elements.Count(), deserialized.Elements.Count());
-        Assert.Equal(model.ToSvg(), deserialized.ToSvg());
+        var exporter = new DstvSvgExporter();
+        Assert.Equal(exporter.Export(model, FaceCode.V), exporter.Export(deserialized, FaceCode.V));
     }
 
     [Fact]

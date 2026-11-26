@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.Json.Serialization;
+using DSTV.Net.Svg;
 
 namespace DSTV.Net.Data;
 
@@ -87,19 +88,32 @@ public record Contour : DstvElement
         return point.FlCode == first.FlCode;
     }
 
-    public override string ToSvg()
+    [SuppressMessage("Design", "MA0051:Method is too long", Justification = "SVG contour traversal keeps face and radius state together")]
+    internal override string ToSvg(FaceCode faceCode, DstvSvgExporter exporter)
     {
         var sb = new StringBuilder();
         var sbLine = new StringBuilder();
         var previous = new DstvContourPoint(FaceCode.None, 0, 0, IsNotch: false, 0);
+        var activeFace = FaceCode.None;
+        var inPath = false;
         foreach (var point in _pointList)
         {
-            if (_pointList.IndexOf(point) == 0)
+            if (point.FlCode != FaceCode.None) activeFace = point.FlCode;
+            if (activeFace != faceCode)
             {
-                sb.Append("M ").Append(point.XCoord).Append(' ').Append(point.YCoord);
+                inPath = false;
                 previous = point;
                 continue;
             }
+
+            if (!inPath)
+            {
+                sb.Append("M ").Append(point.XCoord).Append(' ').Append(point.YCoord);
+                inPath = true;
+                previous = point;
+                continue;
+            }
+
             sb.Append(' ');
             var radius = previous.Radius;
             switch (radius)
@@ -136,14 +150,26 @@ public record Contour : DstvElement
             {
                 sbLine.Append("<line x1=\"").Append(screwingPoint.XCoord).Append("\" y1=\"")
                     .Append(screwingPoint.YCoord).Append("\" x2=\"").Append(point.XCoord).Append("\" y2=\"")
-                    .Append(point.YCoord).Append("\" stroke=\"red\" stroke-width=\"4\" />");
+                    .Append(point.YCoord).Append("\" class=\"")
+                    .Append(exporter.Classes(SvgCssClass.Bevel, SvgCssClass.Outline)).Append("\" />");
             }
 
             previous = point;
         }
 
         var points = sb.ToString();
-        var color = Type == ContourType.AK ? "grey" : "white";
-        return $"<path d=\"{points}\" fill=\"{color}\" stroke=\"black\" stroke-width=\"0.5\" />{sbLine}";
+        if (points.Length == 0) return string.Empty;
+
+        var contourClass = Type switch
+        {
+            ContourType.PU => SvgCssClass.Powder,
+            ContourType.KO => SvgCssClass.Punch,
+            ContourType.IK => SvgCssClass.InnerContour,
+            _ => SvgCssClass.OuterContour,
+        };
+        var cssClass = Type is ContourType.PU or ContourType.KO
+            ? exporter.Classes(SvgCssClass.Contour, SvgCssClass.Marking, contourClass)
+            : exporter.Classes(SvgCssClass.Contour, contourClass);
+        return $"<path class=\"{cssClass}\" d=\"{points}\" />{sbLine}";
     }
 }

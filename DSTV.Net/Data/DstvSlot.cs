@@ -1,4 +1,5 @@
 using DSTV.Net.Enums;
+using DSTV.Net.Svg;
 
 namespace DSTV.Net.Data;
 
@@ -29,5 +30,8 @@ public record DstvSlot : DstvHole
 
     public override string ToString() => $"{base.ToString()}, SlotLength : {SlotLength}, SlothWidth : {SlotWidth}, SlotAngle : {SlotAngle}";
 
-    public override string ToSvg() => $"<rect x=\"{XCoord}\" y=\"{YCoord}\" width=\"{SlotLength + Diameter}\" height=\"{Diameter}\" fill=\"white\" rx=\"{Diameter / 2}\" />";
+    internal override string ToSvg(FaceCode faceCode, DstvSvgExporter exporter) =>
+        IsOnFace(faceCode)
+            ? $"<rect class=\"{exporter.Classes(SvgCssClass.Slot, SvgCssClass.Outline)}\" x=\"{XCoord - (SlotLength + Diameter) / 2:F}\" y=\"{YCoord - Diameter / 2:F}\" width=\"{SlotLength + Diameter:F}\" height=\"{Diameter:F}\" rx=\"{Diameter / 2:F}\" transform=\"rotate({SlotAngle:F} {XCoord:F} {YCoord:F})\" />"
+            : string.Empty;
 }
