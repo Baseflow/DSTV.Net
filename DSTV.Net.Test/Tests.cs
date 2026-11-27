@@ -559,6 +559,54 @@ public class Tests
     }
 
     [Fact]
+    public void TestHolesSupportLetterCoordinateAndFabricationSeparators()
+    {
+        var hole = Assert.IsType<DstvHole>(
+            DstvHole.CreateHole("  v100.00u100.00s18.00 12.00"));
+        var slot = Assert.IsType<DstvSlot>(
+            DstvHole.CreateHole("  v1512.00o144.00 24.00 0.00l100.00 60.00 10.00"));
+
+        Assert.Equal((FaceCode.V, 100.00, 100.00, 18.00, 12.00),
+            (hole.FlCode, hole.XCoord, hole.YCoord, hole.Diameter, hole.Depth));
+        Assert.Equal((FaceCode.V, 1512.00, 144.00, 24.00, 0.00, 100.00, 60.00, 10.00),
+            (slot.FlCode, slot.XCoord, slot.YCoord, slot.Diameter, slot.Depth,
+                slot.SlotLength, slot.SlotWidth, slot.SlotAngle));
+    }
+
+    [Fact]
+    public void TestNumerationsSupportLetterCoordinateSeparatorsAndText()
+    {
+        var numeration = DstvNumeration.CreateNumeration(
+            "  u200.00u225.00 0000.00 5 1/1/1 sample text");
+
+        Assert.Equal(FaceCode.U, numeration.FlCode);
+        Assert.Equal(200.00, numeration.XCoord);
+        Assert.Equal(225.00, numeration.YCoord);
+        Assert.Equal(0.00, numeration.Angle);
+        Assert.Equal(5.00, numeration.LetterHeight);
+        Assert.Equal("1/1/1 sample text", numeration.Text);
+    }
+
+    [Fact]
+    public async Task TestParseAsyncKeepsCompactBoAndSiLines()
+    {
+        var data = await File.ReadAllTextAsync($"{DataPath}/Data/blocks.nc");
+        data = data.Replace(
+            "  v      50.00     150.00       0.00      10.00 BLOCKS-1 sample text",
+            "  v50.00u150.00 0.00 10.00 BLOCKS-1 sample text",
+            StringComparison.Ordinal);
+        data = data.Replace(
+            "  v     250.00     100.00      18.00       0.00",
+            "  v250.00u100.00 18.00 0.00",
+            StringComparison.Ordinal);
+
+        var model = await new DstvReader().ParseAsync(data);
+
+        Assert.Equal(2, model.Elements.OfType<DstvHole>().Count());
+        Assert.Equal("BLOCKS-1 sample text", Assert.Single(model.Elements.OfType<DstvNumeration>()).Text);
+    }
+
+    [Fact]
     public async Task TestCombinedBlockKindsFromPublicFormatExamples()
     {
         using var streamReader = new StreamReader($"{DataPath}/Data/blocks.nc");
