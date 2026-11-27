@@ -5,22 +5,21 @@ on:
     branches: [ main ]
     paths:
       - 'DSTV.Net/DSTV.Net.csproj'
+      - 'DSTV.Net.Json/DSTV.Net.Json.csproj'
       - 'Directory.Build.props'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         name: Checkout repository
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: |
-            6.0.x
-            7.0.x
             8.0.x
-            9.0.x
+            10.0.x
       - name: Restore dependencies
         run: dotnet restore
       - name: Test

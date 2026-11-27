@@ -1,42 +1,68 @@
+using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
-using DSTV.Net.Implementations;
+using System.Net;
+using System.Text.RegularExpressions;
+using DSTV.Net.Svg;
 
 namespace DSTV.Net.Data;
 
-public record DstvNumeration : LocatedElement
+public partial record DstvNumeration : LocatedElement
 {
-    private readonly double _angle;
-    private readonly double _letterHeight;
-    private readonly string _text;
+    private const string NumberPattern = @"[+-]?(?:\d+(?:\.\d*)?|\.\d+)";
 
-    private DstvNumeration(string flCode, double xCoord, double yCoord, double angle, double letterHeight,
-        string text) :
-        base(flCode, xCoord, yCoord)
+#if NET7_0_OR_GREATER
+    [GeneratedRegex(
+        @"^\s*(?<angle>" + NumberPattern + @")\s+(?<letterHeight>" + NumberPattern +
+        @")(?:\s*[rz])?\s*(?<text>.+?)\s*$",
+        RegexOptions.IgnoreCase,
+        1000)]
+    private static partial Regex NumerationPattern();
+#else
+    private static readonly Regex NumerationRegex = new(
+        @"^\s*(?<angle>" + NumberPattern + @")\s+(?<letterHeight>" + NumberPattern +
+        @")(?:\s*[rz])?\s*(?<text>.+?)\s*$",
+        RegexOptions.IgnoreCase,
+        TimeSpan.FromSeconds(1));
+
+    private static Regex NumerationPattern() => NumerationRegex;
+#endif
+
+    public double Angle { get; }
+
+    public double LetterHeight { get; }
+
+    public string Text { get; }
+
+    public DstvNumeration(FaceCode FlCode, double XCoord, double YCoord, double Angle, double LetterHeight,
+        string Text) :
+        base(FlCode, XCoord, YCoord)
     {
-        _angle = angle;
-        _letterHeight = letterHeight;
-        _text = text;
+        Type = ContourType.SI;
+        this.Angle = Angle;
+        this.LetterHeight = LetterHeight;
+        this.Text = Text;
     }
 
 
     public static DstvNumeration CreateNumeration(string dstvLine)
     {
-        var separated = GetDataVector(dstvLine, FineSplitter.Instance);
-        // temporary flange-code in case of missing a signature in line
-        var flCode = "x";
-        if (ValidateFlange(separated[1])) flCode = separated[1];
+        var (flCode, xCoord, yCoord, remaining) = ParseLocation(dstvLine);
+        var match = NumerationPattern().Match(remaining);
+        if (!match.Success)
+            throw new DstvParseException("Illegal numeric data vector format (SI)");
 
-        separated = CorrectSplits(separated, skipLast: true);
+        var angle = double.Parse(match.Groups["angle"].Value, Constants.ParserCultureInfo);
+        var letterHeight = double.Parse(match.Groups["letterHeight"].Value, Constants.ParserCultureInfo);
+        var text = match.Groups["text"].Value.Trim();
 
-        if (separated.Length < 5) throw new DstvParseException("Illegal data-vector length (SI) - too short");
-
-        var xCoord = double.Parse(separated[0], Constants.ParserCultureInfo);
-        var yCoord = double.Parse(separated[1], Constants.ParserCultureInfo);
-        var angle = double.Parse(separated[2], Constants.ParserCultureInfo);
-        var lh = double.Parse(separated[3], Constants.ParserCultureInfo);
-        return new DstvNumeration(flCode, xCoord, yCoord, angle, lh, separated[4]);
+        return new DstvNumeration(flCode, xCoord, yCoord, angle, letterHeight, text);
     }
 
     public override string ToString() =>
-        $"Numeration: FlCode={FlCode}, XCoord={XCoord}, YCoord={YCoord}, Angle={_angle}, LetterHeight {_letterHeight}, Text : {_text}";
+        $"Numeration: FlCode={FlCode}, XCoord={XCoord}, YCoord={YCoord}, Angle={Angle}, LetterHeight {LetterHeight}, Text : {Text}";
+
+    internal override string ToSvg(FaceCode faceCode, DstvSvgExporter exporter) =>
+        IsOnFace(faceCode)
+            ? $"<text class=\"{exporter.Classes(SvgCssClass.Text)}\" x=\"{XCoord:F}\" y=\"{YCoord:F}\" font-size=\"{LetterHeight:F}\" transform=\"rotate({-Angle:F} {XCoord:F} {YCoord:F})\">{WebUtility.HtmlEncode(Text)}</text>"
+            : string.Empty;
 }

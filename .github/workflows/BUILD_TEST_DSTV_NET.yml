@@ -11,46 +11,62 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+      - name: Check SonarCloud configuration
+        id: sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          if [ -n "$SONAR_TOKEN" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        if: steps.sonar.outputs.enabled == 'true'
+        uses: actions/setup-java@v6
         with:
           java-version: 17
           distribution: 'zulu'
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
         with:
-          path: ~\sonar\cache
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Cache SonarCloud packages
+        if: steps.sonar.outputs.enabled == 'true'
+        uses: actions/cache@v6
+        with:
+          path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
       - name: Install SonarCloud scanners
+        if: steps.sonar.outputs.enabled == 'true'
         run: |
           dotnet tool install --global dotnet-sonarscanner
 
       - name: Build and analyze
+        if: steps.sonar.outputs.enabled == 'true'
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          dotnet-sonarscanner begin /k:"Baseflow_DSTV.Net" /o:"baseflow" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          dotnet-sonarscanner begin /k:"Baseflow_DSTV.Net" /o:"baseflow" /d:sonar.login="$SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io"
           dotnet build
-          dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          dotnet-sonarscanner end /d:sonar.login="$SONAR_TOKEN"
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: |
-            6.0.x
-            7.0.x
-            8.0.x
-            9.0.x
       - name: Restore dependencies
         run: dotnet restore DSTV.Net.sln
       - name: Build
         run: dotnet build DSTV.Net.sln --no-restore
+      - name: Verify .NET Standard build
+        run: |
+          dotnet build DSTV.Net/DSTV.Net.csproj --framework netstandard2.0 --no-restore
+          dotnet build DSTV.Net.Json/DSTV.Net.Json.csproj --framework netstandard2.0 --no-restore
       - name: Test
         run: dotnet test DSTV.Net.sln --no-build --verbosity normal

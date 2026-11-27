@@ -4,14 +4,14 @@ namespace DSTV.Net.Implementations;
 
 internal class DotSplitter : ISplitter
 {
-    internal static Lazy<DotSplitter> Instance = new(() => new DotSplitter());
+    internal static Lazy<DotSplitter> Instance = new(static () => new());
 
     public string[] Split(string input)
     {
         const int intDigits = 4;
         const int n = 3;
 
-        var dotPoss = new int[n];
+        int[] dotPoss = new int[n];
         for (var i = 0; i < n; i++)
         {
             var prevPos = 0;
@@ -19,7 +19,7 @@ internal class DotSplitter : ISplitter
             dotPoss[i] = input.IndexOf('.', prevPos + 1);
         }
 
-        var outArr = new string[n];
+        string[] outArr = new string[n];
         for (var i = 0; i < n; i++) outArr[i] = input.Substring(dotPoss[i] - intDigits, dotPoss[i] + 2);
 
         return outArr;

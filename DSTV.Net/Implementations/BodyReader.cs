@@ -1,6 +1,7 @@
 using DSTV.Net.Data;
 using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
+using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
 
 namespace DSTV.Net.Implementations;
@@ -13,10 +14,14 @@ internal static class BodyReader
     /// <param name="items">An enumerable of strings that will be iterated.</param>
     /// <param name="contourType">The type of contour to handle with.</param>
     /// <param name="action">The action to call for each non-skipped item.</param>
-    private static void SkipSelfAndExecute(this IEnumerable<string> items, ContourType contourType, Action<string> action)
+    /// <param name="logger">The logger for recoverable parse failures.</param>
+    /// <param name="cancellationToken">A token that can cancel processing.</param>
+    private static void SkipSelfAndExecute(this IEnumerable<string> items, ContourType contourType,
+        Action<string> action, ILogger logger, CancellationToken cancellationToken)
     {
         foreach (var item in items)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             try
             {
                 if (item.Equals(contourType.ToString(), StringComparison.Ordinal)) continue;
@@ -24,59 +29,67 @@ internal static class BodyReader
             }
             catch (DstvParseException dStVParseException)
             {
-                Console.WriteLine(dStVParseException);
+                DstvLog.LogParseElementFailed(logger, item, dStVParseException);
             }
         }
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "Should be cleaned up later")]
-    public static async Task<IEnumerable<DstvElement>> GetElementsAsync(ReaderContext readerContext)
+    public static async Task<IEnumerable<DstvElement>> GetElementsAsync(ReaderContext readerContext,
+        ILogger logger, CancellationToken cancellationToken)
     {
-        var outputList = new List<DstvElement>();
-        var elemMap = await GetElementMapAsync(readerContext).ConfigureAwait(false);
+        cancellationToken.ThrowIfCancellationRequested();
+        List<DstvElement> outputList = [];
+        var elemMap = await GetElementMapAsync(readerContext, logger, cancellationToken).ConfigureAwait(false);
         // holes & slots
-        (elemMap.GetValueOrDefault(ContourType.BO) ?? new List<List<string>>())
+        (elemMap.GetValueOrDefault(ContourType.BO) ?? [])
             .SelectMany(holeList => holeList)
-            .SkipSelfAndExecute(ContourType.BO, (holeNote) => outputList.Add(DstvHole.CreateHole(holeNote)));
+            .SkipSelfAndExecute(ContourType.BO, holeNote => outputList.Add(DstvHole.CreateHole(holeNote)),
+                logger, cancellationToken);
 
         // outer contours
         var outerBorders = elemMap.GetValueOrDefault(ContourType.AK);
-        AddContoursByType(outputList, outerBorders, ContourType.AK);
+        AddContoursByType(outputList, outerBorders, ContourType.AK, logger, cancellationToken);
         // inner contours
         var innerBorders = elemMap.GetValueOrDefault(ContourType.IK);
-        AddContoursByType(outputList, innerBorders, ContourType.IK);
+        AddContoursByType(outputList, innerBorders, ContourType.IK, logger, cancellationToken);
         // powder contours
         var powderPointNotes = elemMap.GetValueOrDefault(ContourType.PU);
-        AddContoursByType(outputList, powderPointNotes, ContourType.PU);
+        AddContoursByType(outputList, powderPointNotes, ContourType.PU, logger, cancellationToken);
         // punch contours
         var punchPointNotes = elemMap.GetValueOrDefault(ContourType.KO);
-        AddContoursByType(outputList, punchPointNotes, ContourType.KO);
+        AddContoursByType(outputList, punchPointNotes, ContourType.KO, logger, cancellationToken);
         // numeration
-        (elemMap.GetValueOrDefault(ContourType.SI)?? new List<List<string>>())
+        (elemMap.GetValueOrDefault(ContourType.SI) ?? [])
             .SelectMany(numNote => numNote)
-            .SkipSelfAndExecute(ContourType.SI, (numNote) => outputList.Add(DstvNumeration.CreateNumeration(numNote)));
+            .SkipSelfAndExecute(ContourType.SI, numNote => outputList.Add(DstvNumeration.CreateNumeration(numNote)),
+                logger, cancellationToken);
         // bends
-        (elemMap.GetValueOrDefault(ContourType.KA) ?? new List<List<string>>())
+        (elemMap.GetValueOrDefault(ContourType.KA) ?? [])
             .SelectMany(bendNote => bendNote)
-            .SkipSelfAndExecute(ContourType.KA, (bendNote) => outputList.Add(DstvBend.CreateBend(bendNote)));
+            .SkipSelfAndExecute(ContourType.KA, bendNote => outputList.Add(DstvBend.CreateBend(bendNote)),
+                logger, cancellationToken);
         // cuts
-        (elemMap.GetValueOrDefault(ContourType.SC) ?? new List<List<string>>())
+        (elemMap.GetValueOrDefault(ContourType.SC) ?? [])
             .SelectMany(cutNote => cutNote)
-            .SkipSelfAndExecute(ContourType.SC, (cutNote) => outputList.Add(DstvCut.CreateCut(cutNote)));
+            .SkipSelfAndExecute(ContourType.SC, cutNote => outputList.Add(DstvCut.CreateCut(cutNote)),
+                logger, cancellationToken);
        
         return outputList;
     }
 
     private static void AddContoursByType(List<DstvElement> outElemList, List<List<string>>? notesBlockList,
-        ContourType type)
+        ContourType type, ILogger logger, CancellationToken cancellationToken)
     {
         if (notesBlockList is null) return;
 
         foreach (var noteList in notesBlockList)
         {
-            List<DstvContourPoint> localList = new();
+            cancellationToken.ThrowIfCancellationRequested();
+            List<DstvContourPoint> localList = [];
             foreach (var pointNote in noteList)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 try
                 {
                     if (pointNote.Equals(type.ToString(), StringComparison.Ordinal)) continue;
@@ -84,30 +97,29 @@ internal static class BodyReader
                 }
                 catch (DstvParseException dStVParseException)
                 {
-                    Console.WriteLine(dStVParseException);
+                    DstvLog.LogParseElementFailed(logger, pointNote, dStVParseException);
                 }
             }
 
             try
             {
-                outElemList.AddRange(Contour.CreateSeveralContours(localList, type));
+                outElemList.AddRange(Contour.CreateSeveralContours(localList, type, logger));
             }
             catch (DstvParseException dStVParseException)
             {
-                Console.WriteLine(dStVParseException);
+                DstvLog.LogCreateElementFailed(logger, noteList, dStVParseException);
             }
         }
     }
 
-    private static async Task<Dictionary<ContourType, List<List<string>>?>> GetElementMapAsync(ReaderContext context)
+    private static async Task<Dictionary<ContourType, List<List<string>>?>> GetElementMapAsync(
+        ReaderContext context, ILogger logger, CancellationToken cancellationToken)
     {
-        var reader = context.Source;
-
-        Dictionary<ContourType, List<List<string>>?> elemMap = new();
+        Dictionary<ContourType, List<List<string>>?> elemMap = [];
         var curKey = ContourType.None;
         while (true)
         {
-            var line = await reader.ReadLineAsync().ConfigureAwait(false);
+            var line = await context.ReadLineAsync(cancellationToken).ConfigureAwait(false);
             // if has END-mark.
             //  Maybe to be refactored for multi-peace file processing
             if (line?.Equals(Constants.EndOfFile, StringComparison.Ordinal) != false ||
@@ -116,18 +128,18 @@ internal static class BodyReader
             // if has quote-mark
             if (Regex.IsMatch(line, "^\\*\\*.*", RegexOptions.None, TimeSpan.FromSeconds(1))) continue;
 
-            if (CheckCodeLine(line))
+            if (IsCodeLine(line))
             {
 #if NET
                 curKey = (ContourType)Enum.Parse<ContourType>(line);
 #else
                 curKey = (ContourType)Enum.Parse(typeof(ContourType), line);
 #endif
-                if (!CheckIfMark(line)) Console.WriteLine(line + "Warning: unregistered DStV code-line detected: ");
+                if (!CheckIfMark(line)) DstvLog.LogUnknownBlockCode(logger, line);
 
-                if (!elemMap.ContainsKey(curKey)) elemMap.Add(curKey, new List<List<string>>());
+                if (!elemMap.ContainsKey(curKey)) elemMap.Add(curKey, []);
 
-                elemMap.GetValueOrDefault(curKey)?.Add(new List<string>());
+                elemMap.GetValueOrDefault(curKey)?.Add([]);
             }
 
             if (curKey is ContourType.None) continue;
@@ -144,12 +156,11 @@ internal static class BodyReader
         Regex.IsMatch(str,
             "^BO$|^SI$|^AK$|^IK$|^PU$|^KO$|^SC$|^UE$|^KA$|^EN$|^ST$|^E[0-9]$|^B[0-9]$|^S[0-9]$|^A[0-9]$|^I[0-9]$|^P[0-9]$|^K[0-9]$", RegexOptions.None, TimeSpan.FromSeconds(1));
 
-    private static bool CheckCodeLine(string str) => Regex.IsMatch(str, "^[A-Z0-9]{2}$", RegexOptions.None, TimeSpan.FromSeconds(1));
+    internal static bool IsCodeLine(string? str) => str is not null
+        && Regex.IsMatch(str, "^[A-Z0-9]{2}$", RegexOptions.None, TimeSpan.FromSeconds(1));
 
     public static string[] RemoveVoids(IEnumerable<string> toBeRefined)
     {
-        var tempList = new List<string>(toBeRefined);
-        tempList.RemoveAll(string.IsNullOrEmpty);
-        return tempList.ToArray();
+        return [.. toBeRefined.Where(static item => !string.IsNullOrEmpty(item))];
     }
 }

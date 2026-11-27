@@ -1,25 +1,33 @@
+using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
+using DSTV.Net.Svg;
 
 namespace DSTV.Net.Data;
 
 public record DstvCut : DstvElement
 {
-    private readonly double _normVecX;
-    private readonly double _normVecY;
-    private readonly double _normVecZ;
-    private readonly double _spPointX;
-    private readonly double _spPointY;
-    private readonly double _spPointZ;
+    public double OriginX { get; }
 
-    private DstvCut(double spPointX, double spPointY, double spPointZ, double normVecX, double normVecY, double normVecZ)
+    public double OriginY { get; }
+
+    public double OriginZ { get; }
+
+    public double NormalX { get; }
+
+    public double NormalY { get; }
+
+    public double NormalZ { get; }
+
+    public DstvCut(double OriginX, double OriginY, double OriginZ, double NormalX, double NormalY, double NormalZ)
     {
-        _spPointX = spPointX;
-        _spPointY = spPointY;
-        _spPointZ = spPointZ;
-        _normVecX = normVecX;
-        _normVecY = normVecY;
-        _normVecZ = normVecZ;
+        Type = ContourType.SC;
+        this.OriginX = OriginX;
+        this.OriginY = OriginY;
+        this.OriginZ = OriginZ;
+        this.NormalX = NormalX;
+        this.NormalY = NormalY;
+        this.NormalZ = NormalZ;
     }
 
     public static DstvCut CreateCut(string dataLine)
@@ -40,5 +48,18 @@ public record DstvCut : DstvElement
     }
 
     public override string ToString() =>
-        $"DstvCut: spPointX={_spPointX}, spPointY={_spPointY}, spPointZ={_spPointZ}, normVecX={_normVecX}, normVecY={_normVecY}, normVecZ={_normVecZ}";
+        $"DstvCut: spPointX={OriginX}, spPointY={OriginY}, spPointZ={OriginZ}, normVecX={NormalX}, normVecY={NormalY}, normVecZ={NormalZ}";
+
+    internal override string ToSvg(FaceCode faceCode, DstvSvgExporter exporter)
+    {
+        if (faceCode != FaceCode.V) return string.Empty;
+
+        const double indicatorLength = 20;
+        var scale = Math.Max(Math.Abs(NormalX), Math.Abs(NormalY));
+        if (scale == 0) return string.Empty;
+
+        var endX = OriginX + NormalX / scale * indicatorLength;
+        var endY = OriginY + NormalY / scale * indicatorLength;
+        return $"<line class=\"{exporter.Classes(SvgCssClass.Cut, SvgCssClass.Outline)}\" x1=\"{OriginX:F}\" y1=\"{OriginY:F}\" x2=\"{endX:F}\" y2=\"{endY:F}\" data-normal-z=\"{NormalZ:F}\" />";
+    }
 }

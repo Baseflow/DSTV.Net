@@ -18,7 +18,7 @@
 		<Product>$(AssemblyName) ($(TargetFramework))</Product>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<LangVersion>latest</LangVersion>
+		<LangVersion>14.0</LangVersion>
 		<NoWarn>$(NoWarn);1591;1701;1702;1705;VSX1000;NU1603;CA1014;NU5125;CA1510;CA2263;CA1515</NoWarn>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<Platform>AnyCPU</Platform>
@@ -56,36 +56,28 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-		<PackageReference Include="Meziantou.Polyfill" Version="1.0.42">
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.404" PrivateAssets="All" />
+		<PackageReference Include="Meziantou.Polyfill" Version="1.0.173">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0">
+		<PackageReference Include="Roslynator.Analyzers" Version="5.0.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Roslynator.Analyzers" Version="4.13.0">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Roslynator.Formatting.Analyzers" Version="4.13.0">
+		<PackageReference Include="Roslynator.Formatting.Analyzers" Version="5.0.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="ReflectionAnalyzers" Version="0.3.1">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Nullable.Extended.Analyzer" Version="1.15.6495">
+		<PackageReference Include="Nullable.Extended.Analyzer" Version="1.19.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Meziantou.Analyzer" Version="2.0.187">
+		<PackageReference Include="Meziantou.Analyzer" Version="3.0.342">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="AsyncFixer" Version="1.6.0">
+		<PackageReference Include="AsyncFixer" Version="2.1.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
