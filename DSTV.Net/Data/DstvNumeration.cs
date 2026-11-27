@@ -1,14 +1,23 @@
 using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
-using DSTV.Net.Implementations;
 using System.Text.Json.Serialization;
 using System.Net;
+using System.Text.RegularExpressions;
 using DSTV.Net.Svg;
 
 namespace DSTV.Net.Data;
 
-public record DstvNumeration : LocatedElement
+public partial record DstvNumeration : LocatedElement
 {
+    private const string NumberPattern = @"[+-]?(?:\d+(?:\.\d*)?|\.\d+)";
+
+    [GeneratedRegex(
+        @"^\s*(?<angle>" + NumberPattern + @")\s+(?<letterHeight>" + NumberPattern +
+        @")(?:\s*[rz])?\s*(?<text>.+?)\s*$",
+        RegexOptions.IgnoreCase,
+        1000)]
+    private static partial Regex NumerationPattern();
+
     public double Angle { get; }
 
     public double LetterHeight { get; }
@@ -29,22 +38,14 @@ public record DstvNumeration : LocatedElement
 
     public static DstvNumeration CreateNumeration(string dstvLine)
     {
-        var separated = GetDataVector(dstvLine, FineSplitter.Instance);
-        if (separated.Length < 6)
-            throw new DstvParseException("Illegal data-vector length (SI) - too short");
-
-        if (!TryParseFaceCode(separated[0], out var flCode))
-            throw new DstvParseException("Illegal face code signature in SI data line");
-
-        var coordinates = CorrectSplits(separated[1..5]);
-        if (coordinates.Length != 4)
+        var (flCode, xCoord, yCoord, remaining) = ParseLocation(dstvLine);
+        var match = NumerationPattern().Match(remaining);
+        if (!match.Success)
             throw new DstvParseException("Illegal numeric data vector format (SI)");
 
-        var xCoord = double.Parse(coordinates[0], Constants.ParserCultureInfo);
-        var yCoord = double.Parse(coordinates[1], Constants.ParserCultureInfo);
-        var angle = double.Parse(coordinates[2], Constants.ParserCultureInfo);
-        var letterHeight = double.Parse(coordinates[3], Constants.ParserCultureInfo);
-        var text = string.Join(" ", separated[5..]);
+        var angle = double.Parse(match.Groups["angle"].Value, Constants.ParserCultureInfo);
+        var letterHeight = double.Parse(match.Groups["letterHeight"].Value, Constants.ParserCultureInfo);
+        var text = match.Groups["text"].Value.Trim();
 
         return new DstvNumeration(flCode, xCoord, yCoord, angle, letterHeight, text);
     }
