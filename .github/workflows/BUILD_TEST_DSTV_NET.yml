@@ -11,7 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+      - name: Check SonarCloud configuration
+        id: sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          if [ -n "$SONAR_TOKEN" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Set up JDK 17
+        if: steps.sonar.outputs.enabled == 'true'
         uses: actions/setup-java@v4
         with:
           java-version: 17
@@ -21,31 +31,35 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v4
-        with:
-          path: ~\sonar\cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
-      - name: Install SonarCloud scanners
-        run: |
-          dotnet tool install --global dotnet-sonarscanner
-
-      - name: Build and analyze
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          dotnet-sonarscanner begin /k:"Baseflow_DSTV.Net" /o:"baseflow" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet build
-          dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
             8.0.x
             10.0.x
+
+      - name: Cache SonarCloud packages
+        if: steps.sonar.outputs.enabled == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Install SonarCloud scanners
+        if: steps.sonar.outputs.enabled == 'true'
+        run: |
+          dotnet tool install --global dotnet-sonarscanner
+
+      - name: Build and analyze
+        if: steps.sonar.outputs.enabled == 'true'
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          dotnet-sonarscanner begin /k:"Baseflow_DSTV.Net" /o:"baseflow" /d:sonar.login="$SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io"
+          dotnet build
+          dotnet-sonarscanner end /d:sonar.login="$SONAR_TOKEN"
+
       - name: Restore dependencies
         run: dotnet restore DSTV.Net.sln
       - name: Build
