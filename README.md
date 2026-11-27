@@ -28,7 +28,6 @@ Version 2.0.0 contains several intentional API changes:
 - `Contour.Type` moved to the common `DstvElement` base for top-level parsed elements.
 - `DstvContourPoint` is no longer a `DstvElement`.
 - `ToSvg()` was removed from `IDstv` and the model. Use `DstvSvgExporter.Export(...)` or `ExportDocument(...)`.
-- Feature detection now distinguishes saw cuts from AK/IK regular contour cuts.
 
 Introduction
 
@@ -153,6 +152,9 @@ exporter[SvgCssClass.InnerContour].Style = ""; // Keep the class in graphics, bu
 
 ## AI assistance disclaimer
 
-Artificial-intelligence tools may be used to assist with implementation, testing, documentation, and code review in this repository. Maintainers remain responsible for evaluating and accepting generated changes. AI-assisted output does not replace validation against the DSTV specification, real NC1 exports, or the target machine's postprocessor and production requirements.
+This version was created using artificial-intelligence assistance.
+Such tools may be used to assist with implementation, testing, documentation, and code review in this repository. 
+Maintainers remain responsible for evaluating and accepting generated changes. 
+AI-assisted output does not replace validation against the DSTV specification, real NC1 exports, or the target machine's postprocessor and production requirements.
 
 Feedback is highly appreciated. Thank you for choosing DSTV.Net - happy coding!
