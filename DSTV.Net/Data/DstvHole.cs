@@ -2,7 +2,6 @@ using DSTV.Net.Exceptions;
 using DSTV.Net.Enums;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
-using System.Text.Json.Serialization;
 using DSTV.Net.Svg;
 
 namespace DSTV.Net.Data;
@@ -30,8 +29,7 @@ public partial record DstvHole : LocatedElement
     /// </summary>
     public double Diameter { get; }
 
-    [JsonConstructor]
-    protected DstvHole(FaceCode FlCode, double XCoord, double YCoord, double Diameter, double Depth)
+    public DstvHole(FaceCode FlCode, double XCoord, double YCoord, double Diameter, double Depth)
         : base(FlCode, XCoord, YCoord)
     {
         Type = ContourType.BO;

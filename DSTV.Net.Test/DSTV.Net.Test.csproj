@@ -23,6 +23,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\DSTV.Net\DSTV.Net.csproj" />
+        <ProjectReference Include="..\DSTV.Net.Json\DSTV.Net.Json.csproj" />
     </ItemGroup>
 
 </Project>

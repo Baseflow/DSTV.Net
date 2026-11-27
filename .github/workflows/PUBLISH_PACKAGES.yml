@@ -5,6 +5,7 @@ on:
     branches: [ main ]
     paths:
       - 'DSTV.Net/DSTV.Net.csproj'
+      - 'DSTV.Net.Json/DSTV.Net.Json.csproj'
       - 'Directory.Build.props'
 
 jobs:

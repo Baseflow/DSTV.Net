@@ -4,11 +4,10 @@ using DSTV.Net.Implementations;
 using DSTV.Net.Extensions;
 using DSTV.Net.Comparers;
 using DSTV.Net.Svg;
-using System.Globalization;
+using DSTV.Net.Json;
 using DSTV.Net.Data;
+using System.Globalization;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Xunit;
 
 namespace DSTV.Net.Test;
@@ -646,14 +645,8 @@ public class Tests
         using var streamReader = new StreamReader($"{DataPath}/Data/blocks.nc");
         var model = await new DstvReader().ParseAsync(streamReader);
         var expectedFeatures = model.GetPartFeatures();
-        var options = new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            Converters = { new JsonStringEnumConverter() },
-        };
-
-        var json = JsonSerializer.Serialize<DstvRecord>((DstvRecord)model, options);
-        var deserialized = JsonSerializer.Deserialize<DstvRecord>(json, options);
+        var json = DstvJson.Serialize((DstvRecord)model);
+        var deserialized = DstvJson.Deserialize(json);
 
         Assert.NotNull(deserialized);
         Assert.Equal(expectedFeatures, deserialized.GetPartFeatures());
