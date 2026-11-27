@@ -10,12 +10,22 @@ public abstract partial record LocatedElement(FaceCode FlCode, double XCoord, do
 {
     private const string NumberPattern = @"[+-]?(?:\d+(?:\.\d*)?|\.\d+)";
 
+#if NET7_0_OR_GREATER
     [GeneratedRegex(
         @"^\s*(?<face>[vouh])\s*(?<x>" + NumberPattern + @")\s*(?:[osu])?\s*(?<y>" +
         NumberPattern + @")(?<remaining>.*)$",
         RegexOptions.IgnoreCase,
         1000)]
     private static partial Regex LocationPattern();
+#else
+    private static readonly Regex LocationRegex = new(
+        @"^\s*(?<face>[vouh])\s*(?<x>" + NumberPattern + @")\s*(?:[osu])?\s*(?<y>" +
+        NumberPattern + @")(?<remaining>.*)$",
+        RegexOptions.IgnoreCase,
+        TimeSpan.FromSeconds(1));
+
+    private static Regex LocationPattern() => LocationRegex;
+#endif
 
     public FaceCode FlCode { get; set; } = FlCode;
 

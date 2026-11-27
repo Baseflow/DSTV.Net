@@ -103,7 +103,16 @@ public sealed class DstvSemanticComparer : IEqualityComparer<IDstv>
 
         var closed = string.Equals(PointSignature(points[0]), PointSignature(points[^1]),
             StringComparison.Ordinal);
-        if (closed) points = points[..^1];
+        if (closed)
+        {
+#if NETSTANDARD2_0
+            var openPoints = new DstvContourPoint[points.Length - 1];
+            Array.Copy(points, openPoints, openPoints.Length);
+            points = openPoints;
+#else
+            points = points[..^1];
+#endif
+        }
 
         var forward = PointSignatures(points);
         var reverse = PointSignatures(points.Reverse());

@@ -64,5 +64,9 @@ jobs:
         run: dotnet restore DSTV.Net.sln
       - name: Build
         run: dotnet build DSTV.Net.sln --no-restore
+      - name: Verify .NET Standard build
+        run: |
+          dotnet build DSTV.Net/DSTV.Net.csproj --framework netstandard2.0 --no-restore
+          dotnet build DSTV.Net.Json/DSTV.Net.Json.csproj --framework netstandard2.0 --no-restore
       - name: Test
         run: dotnet test DSTV.Net.sln --no-build --verbosity normal

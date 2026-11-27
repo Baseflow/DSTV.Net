@@ -10,12 +10,22 @@ public partial record DstvNumeration : LocatedElement
 {
     private const string NumberPattern = @"[+-]?(?:\d+(?:\.\d*)?|\.\d+)";
 
+#if NET7_0_OR_GREATER
     [GeneratedRegex(
         @"^\s*(?<angle>" + NumberPattern + @")\s+(?<letterHeight>" + NumberPattern +
         @")(?:\s*[rz])?\s*(?<text>.+?)\s*$",
         RegexOptions.IgnoreCase,
         1000)]
     private static partial Regex NumerationPattern();
+#else
+    private static readonly Regex NumerationRegex = new(
+        @"^\s*(?<angle>" + NumberPattern + @")\s+(?<letterHeight>" + NumberPattern +
+        @")(?:\s*[rz])?\s*(?<text>.+?)\s*$",
+        RegexOptions.IgnoreCase,
+        TimeSpan.FromSeconds(1));
+
+    private static Regex NumerationPattern() => NumerationRegex;
+#endif
 
     public double Angle { get; }
 

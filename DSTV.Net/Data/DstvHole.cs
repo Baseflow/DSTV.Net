@@ -11,6 +11,7 @@ public partial record DstvHole : LocatedElement
 {
     private const string NumberPattern = @"[+-]?(?:\d+(?:\.\d*)?|\.\d+)";
 
+#if NET7_0_OR_GREATER
     [GeneratedRegex(
         @"^\s*(?:[glms])?\s*(?<diameter>" + NumberPattern +
         @")(?:\s+(?<depth>" + NumberPattern +
@@ -20,6 +21,18 @@ public partial record DstvHole : LocatedElement
         RegexOptions.IgnoreCase,
         1000)]
     private static partial Regex HolePattern();
+#else
+    private static readonly Regex HoleRegex = new(
+        @"^\s*(?:[glms])?\s*(?<diameter>" + NumberPattern +
+        @")(?:\s+(?<depth>" + NumberPattern +
+        @"))?(?:\s*l?\s*(?<slotLength>" + NumberPattern +
+        @")\s+(?<slotWidth>" + NumberPattern +
+        @")\s+(?<slotAngle>" + NumberPattern + @"))?\s*$",
+        RegexOptions.IgnoreCase,
+        TimeSpan.FromSeconds(1));
+
+    private static Regex HolePattern() => HoleRegex;
+#endif
 
     // 0 if through
     public double Depth { get; }
