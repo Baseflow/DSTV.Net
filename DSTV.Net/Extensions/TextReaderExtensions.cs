@@ -144,25 +144,32 @@ internal static class TextReaderExtensions
         return value;
     }
 
-    internal static async Task<string?> ReadLineWithCancellationAsync(this TextReader reader,
+    internal static Task<string?> ReadLineWithCancellationAsync(this TextReader reader,
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 #if NET8_0_OR_GREATER
-        return await reader.ReadLineAsync(cancellationToken).ConfigureAwait(false);
+        return reader.ReadLineAsync(cancellationToken).AsTask();
 #else
-        return await reader.ReadLineAsync().ConfigureAwait(false);
+        return ReadAfterCancellationCheckAsync(reader.ReadLineAsync(), cancellationToken);
 #endif
     }
 
-    internal static async Task<int> ReadWithCancellationAsync(this TextReader reader, char[] buffer, int index,
+    internal static Task<int> ReadWithCancellationAsync(this TextReader reader, char[] buffer, int index,
         int count, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 #if NET8_0_OR_GREATER
-        return await reader.ReadAsync(buffer.AsMemory(index, count), cancellationToken).ConfigureAwait(false);
+        return reader.ReadAsync(buffer.AsMemory(index, count), cancellationToken).AsTask();
 #else
-        return await reader.ReadAsync(buffer, index, count).ConfigureAwait(false);
+        return ReadAfterCancellationCheckAsync(reader.ReadAsync(buffer, index, count), cancellationToken);
 #endif
+    }
+
+    private static async Task<T> ReadAfterCancellationCheckAsync<T>(Task<T> task, CancellationToken cancellationToken)
+    {
+        var result = await task.ConfigureAwait(false);
+        cancellationToken.ThrowIfCancellationRequested();
+        return result;
     }
 }

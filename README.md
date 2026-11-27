@@ -11,6 +11,7 @@ DSTV.Net is an open-source library tailored for .NET platforms, providing a powe
 ### 2.0.1
 
 - Added .NET 10 support and retained .NET 8 LTS support.
+- Restored `.NET Standard 2.0` support for the core and JSON packages.
 - Fixed omitted first `AK` sections when optional header text records are absent.
 - Preserved contour weld-preparation angle/blunting values and explicit face codes.
 - Added cancellation token overloads throughout parsing.
@@ -24,7 +25,7 @@ DSTV.Net is an open-source library tailored for .NET platforms, providing a powe
 
 Version 2.0.0 contains several intentional API changes:
 
-- Supported target frameworks are now `.NET 8` and `.NET 10`; `.NET 6`, `.NET 7`, `.NET 9`, and `netstandard2.0` are no longer targeted.
+- Supported target frameworks are `.NET Standard 2.0`, `.NET 8`, and `.NET 10`; `.NET 6`, `.NET 7`, and `.NET 9` are not targeted.
 - `FlCode` is now the `FaceCode` enum rather than a string.
 - `Contour.Type` moved to the common `DstvElement` base for top-level parsed elements.
 - `DstvContourPoint` is no longer a `DstvElement`.
