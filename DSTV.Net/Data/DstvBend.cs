@@ -1,7 +1,6 @@
 using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
 using DSTV.Net.Implementations;
-using System.Text.Json.Serialization;
 using DSTV.Net.Svg;
 
 namespace DSTV.Net.Data;
@@ -20,8 +19,7 @@ public record DstvBend : DstvElement
 
     public double BendingRadius { get; }
 
-    [JsonConstructor]
-    private DstvBend(double OriginX, double OriginY, double FinishX, double FinishY, double BendingAngle,
+    public DstvBend(double OriginX, double OriginY, double FinishX, double FinishY, double BendingAngle,
         double BendingRadius)
     {
         Type = ContourType.KA;

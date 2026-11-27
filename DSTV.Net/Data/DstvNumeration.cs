@@ -1,6 +1,5 @@
 using DSTV.Net.Enums;
 using DSTV.Net.Exceptions;
-using System.Text.Json.Serialization;
 using System.Net;
 using System.Text.RegularExpressions;
 using DSTV.Net.Svg;
@@ -24,8 +23,7 @@ public partial record DstvNumeration : LocatedElement
 
     public string Text { get; }
 
-    [JsonConstructor]
-    private DstvNumeration(FaceCode FlCode, double XCoord, double YCoord, double Angle, double LetterHeight,
+    public DstvNumeration(FaceCode FlCode, double XCoord, double YCoord, double Angle, double LetterHeight,
         string Text) :
         base(FlCode, XCoord, YCoord)
     {

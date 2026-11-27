@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using System.Text.Json.Serialization;
 using DSTV.Net.Svg;
 
 namespace DSTV.Net.Data;
@@ -17,8 +16,7 @@ public record Contour : DstvElement
 
     public IEnumerable<DstvContourPoint> Points => _pointList;
 
-    [JsonConstructor]
-    private Contour(IEnumerable<DstvContourPoint> points, ContourType type)
+    public Contour(IEnumerable<DstvContourPoint> points, ContourType type)
     {
         _pointList = [.. points];
         Type = type;

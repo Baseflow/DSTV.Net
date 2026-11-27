@@ -2,12 +2,13 @@
 [![Build and Test](https://github.com/Baseflow/DSTV.Net/actions/workflows/BUILD_TEST_DSTV_NET.yml/badge.svg)](https://github.com/Baseflow/DSTV.Net/actions/workflows/BUILD_TEST_DSTV_NET.yml)
 [![Publish](https://github.com/Baseflow/DSTV.Net/actions/workflows/PUBLISH_PACKAGES.yml/badge.svg)](https://github.com/Baseflow/DSTV.Net/actions/workflows/PUBLISH_PACKAGES.yml)
 [![NuGet version (DSTV.Net)](https://img.shields.io/nuget/v/DSTV.Net.svg?style=flat-square)](https://www.nuget.org/packages/DSTV.Net/)
+[![NuGet version (DSTV.Net.Json)](https://img.shields.io/nuget/v/DSTV.Net.Json.svg?style=flat-square)](https://www.nuget.org/packages/DSTV.Net.Json/)
 
 DSTV.Net is an open-source library tailored for .NET platforms, providing a powerful utility for interacting with DSTV (also known as NC1 or Tekla) files. These files serve as a key industry standard in the steel industry, defining geometry and project information for steel plates.
 
 ## Changelog
 
-### 2.0.0
+### 2.0.1
 
 - Added .NET 10 support and retained .NET 8 LTS support.
 - Fixed omitted first `AK` sections when optional header text records are absent.
@@ -15,7 +16,7 @@ DSTV.Net is an open-source library tailored for .NET platforms, providing a powe
 - Added cancellation token overloads throughout parsing.
 - Replaced console output with optional `ILogger<DstvReader>` support and a `NullLogger` default.
 - Added part feature detection, `PartFeatures`, and order-independent semantic comparison.
-- Added JSON round-trip support for parsed models.
+- Added source-generated JSON round-trip support in the separate `DSTV.Net.Json` package.
 - Added face-filtered, configurable SVG export for all supported blocks.
 - Added broad public-format fixtures and coverage for AK/IK/PU/KO/SI/BO/SC/KA records.
 
@@ -46,6 +47,17 @@ Installation via .NET CLI:
 
 ```console
 > dotnet add <TARGET PROJECT> package DSTV.Net
+```
+
+Optional source-generated JSON support is available separately:
+
+```console
+> dotnet add <TARGET PROJECT> package DSTV.Net.Json
+```
+
+```C#
+var json = DstvJson.Serialize((DstvRecord)parsedDstv);
+var restored = DstvJson.Deserialize(json);
 ```
 
 ## Header Information Parsing
